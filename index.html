@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rest Tracker App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- DaisyUI CDN (built on top of Tailwind) -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Custom styles for the screenshot UI */
+        .card {
+            border-radius: 0.75rem; /* Equivalent to rounded-lg */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* Equivalent to shadow-md */
+        }
+
+        /* Primary Button Style - Filled with color, white text */
+        .btn-primary {
+            background-color: #1d4ed8; /* A darker blue for primary buttons */
+            border-color: #1d4ed8;
+            color: white;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e40af; /* Even darker on hover */
+            border-color: #1e40af;
+        }
+         .btn-primary:active {
+            transform: translateY(1px); /* Subtle press effect */
+        }
+
+        /* Secondary Button Style - Outlined, white background, colored text matching border */
+        .btn-secondary-outline {
+            background-color: white;
+            border: 1px solid #1d4ed8; /* Primary blue for outline */
+            color: #1d4ed8; /* Primary blue for text */
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+
+        .btn-secondary-outline:hover {
+            background-color: #eff6ff; /* Light blue on hover */
+            border-color: #1e40af;
+            color: #1e40af;
+        }
+        .btn-secondary-outline:active {
+            transform: translateY(1px); /* Subtle press effect */
+        }
+
+        /* Success Button (used for Save Day) */
+        .btn-success {
+            background-color: #22c55e; /* Green for success */
+            border-color: #22c55e;
+            color: white;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-success:hover {
+            background-color: #16a34a; /* Darker green on hover */
+            border-color: #16a34a;
+        }
+        .btn-success:active {
+            transform: translateY(1px); /* Subtle press effect */
+        }
+
+
+        /* Custom colors from screenshot */
+        .bg-custom-green {
+            background-color: #d1fae5; /* Light green from screenshot */
+        }
+        .text-custom-green {
+            color: #065f46; /* Darker green text */
+        }
+        .bg-custom-red {
+            background-color: #fee2e2; /* Light red from screenshot */
+        }
+        .text-custom-red {
+            color: #991b1b; /* Darker red text */
+        }
+        .bg-custom-blue {
+            background-color: #eff6ff; /* Light blue from screenshot */
+        }
+        .text-custom-blue {
+            color: #1e40af; /* Darker blue text */
+        }
+
+        /* Badge colors (DaisyUI default with slight adjustments) */
+        .badge-info {
+            background-color: #bfdbfe; /* DaisyUI info badge background */
+            color: #1e40af; /* DaisyUI info badge text */
+        }
+        .badge-warning {
+             background-color: #fef9c3; /* DaisyUI warning badge background */
+             color: #a16207; /* DaisyUI warning badge text */
+        }
+        .badge-success {
+             background-color: #dcfce7; /* DaisyUI success badge background */
+             color: #16a34a; /* DaisyUI success badge text */
+        }
+        .badge-error { /* For violations */
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Responsive badge text size */
+        .badge {
+            font-size: 0.75rem; /* text-xs */
+            padding-left: 0.5rem; /* px-2 */
+            padding-right: 0.5rem; /* px-2 */
+            height: 1.5rem; /* h-6 */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .badge {
+                font-size: 0.875rem; /* text-sm */
+                padding-left: 0.75rem; /* px-3 */
+                padding-right: 0.75rem; /* px-3 */
+                height: 2rem; /* h-8 */
+            }
+        }
+        /* Sidebar specific styles */
+        .sidebar-hidden {
+            transform: translateX(-100%);
+            width: 0;
+            overflow: hidden;
+        }
+        .sidebar-visible {
+            transform: translateX(0);
+            width: 16rem; /* w-64 */
+        }
+        @media (min-width: 1024px) { /* lg breakpoint */
+            .sidebar-hidden {
+                transform: translateX(0);
+                width: 16rem; /* w-64 */
+                overflow: visible;
+            }
+        }
+
+        /* Toast notification styles */
+        .toast-container {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column-reverse; /* New toasts appear at bottom */
+            pointer-events: none; /* Allow clicks through empty space */
+        }
+
+        .toast-item {
+            background-color: #333;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transform: translateY(20px);
+            pointer-events: auto; /* Re-enable clicks on the toast itself */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toast-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-base-100 shadow-lg flex flex-col justify-between py-6 px-4 transition-all duration-300 ease-in-out lg:w-64 flex-shrink-0 sidebar-visible">
+            <div>
+                <div class="flex justify-between items-center text-xl font-bold text-primary mb-10 pl-2">
+                    <div class="flex items-center">
+                        <i class="fas fa-ship mr-2"></i>Rest Tracker
+                    </div>
+                </div>
+                <ul class="menu p-0 text-base-content">
+                    <li>
+                        <a href="#" class="nav-link flex items-center mb-2 active bg-blue-100 text-blue-800 rounded-lg" data-target="dashboard-page">
+                            <i class="fas fa-chart-line mr-3"></i>Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center mb-2 rounded-lg" data-target="record-hours-page">
+                            <i class="fas fa-clock mr-3"></i>Record Hours
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center mb-2 rounded-lg" data-target="my-records-page">
+                            <i class="fas fa-file-alt mr-3"></i>My Records
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center mb-2 rounded-lg" data-target="profile-page">
+                            <i class="fas fa-user-circle mr-3"></i>Profile
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="border-t border-base-200 pt-6">
+                <div class="text-xs text-base-content-secondary mb-2 pl-2">Month Completion</div>
+                <progress class="progress progress-primary w-full" value="70" max="100"></progress>
+                <div class="text-right text-xs text-base-content-secondary mt-1 pr-2">70%</div>
+                <div class="flex items-center mt-6 p-2 bg-base-200 rounded-lg">
+                    <div class="avatar online mr-3">
+                        <div class="w-10 rounded-full">
+                            <img src="https://placehold.co/40x40/b3e0ff/007bff?text=JS" alt="John Smith avatar">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="font-medium text-sm text-base-content">John Smith</div>
+                        <div class="text-xs text-base-content-secondary">Deck Officer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col p-8 overflow-y-auto">
+            <!-- Top Nav/Header -->
+            <div class="flex justify-between items-center py-4 border-b border-base-200 mb-6 sticky top-0 bg-white z-10 rounded-b-lg shadow-sm px-6">
+                <div class="flex items-center h-full">
+                    <!-- Hamburger/Close button to open/close sidebar -->
+                    <button id="sidebar-toggle-btn" class="btn btn-ghost btn-circle lg:hidden mr-4">
+                        <i class="fas fa-bars text-xl"></i> <!-- Default icon -->
+                    </button>
+                    <h1 id="page-title" class="text-2xl font-semibold text-base-content">Dashboard</h1>
+                </div>
+                <!-- Quick Navigation Icons (visible only on small screens when sidebar is closed) -->
+                <div id="quick-nav-icons" class="flex items-center space-x-4 lg:hidden hidden p-2 rounded-full bg-base-100">
+                    <a href="#" class="quick-nav-link text-white hover:text-primary" data-target="dashboard-page" title="Dashboard">
+                        <i class="fas fa-chart-line text-xl"></i>
+                    </a>
+                    <a href="#" class="quick-nav-link text-white hover:text-primary" data-target="record-hours-page" title="Record Hours">
+                        <i class="fas fa-clock text-xl"></i>
+                    </a>
+                    <a href="#" class="quick-nav-link text-white hover:text-primary" data-target="my-records-page" title="My Records">
+                        <i class="fas fa-file-alt text-xl"></i>
+                    </a>
+                    <a href="#" class="quick-nav-link text-white hover:text-primary" data-target="profile-page" title="Profile">
+                        <i class="fas fa-user-circle text-xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dashboard Page Content -->
+            <div id="dashboard-page" class="page-content active">
+                <!-- Removed redundant h2: <h2 class="text-xl font-semibold text-base-content mb-6">Welcome back, John Smith!</h2> -->
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- June 2025 Record Status -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6 col-span-full lg:col-span-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-base-content">June 2025 Record Status</h3>
+                            <div class="badge badge-warning font-semibold">In Progress</div>
+                        </div>
+                        <p class="text-base-content-secondary mb-6 text-sm">Track your monthly compliance progress.</p>
+                        <div class="grid grid-cols-3 gap-4 text-center mb-8">
+                            <div class="bg-custom-blue p-4 rounded-lg">
+                                <div class="text-3xl font-bold text-custom-blue">17</div>
+                                <div class="text-sm text-base-content-secondary">Days Recorded</div>
+                            </div>
+                            <div class="bg-custom-green p-4 rounded-lg">
+                                <div class="text-3xl font-bold text-custom-green">15</div>
+                                <div class="text-sm text-base-content-secondary">Compliant Days</div>
+                            </div>
+                            <div class="bg-custom-red p-4 rounded-lg">
+                                <div class="text-3xl font-bold text-custom-red">2</div>
+                                <div class="text-sm text-base-content-secondary">Violations</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary w-full rounded-lg" id="continue-recording-btn">Continue Recording</button>
+                    </div>
+
+                    <!-- Today's Summary Card -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-base-content mb-4">Today: June 17, 2025</h3>
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-base-content-secondary text-sm">Total Rest:</span>
+                                <span class="font-bold text-base-content text-sm">10.5 hours</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-base-content-secondary text-sm">24hr Status:</span>
+                                <span class="font-bold text-success text-sm">Compliant</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-base-content-secondary text-sm">7-day Total:</span>
+                                <span class="font-bold text-base-content text-sm">77 hours</span>
+                            </div>
+                        </div>
+                        <h4 class="text-sm font-semibold text-base-content-secondary mb-2">Rest Periods Today</h4>
+                        <ul class="list-disc list-inside space-y-1 mb-6">
+                            <li class="text-base-content-secondary text-sm">00:00 - 06:00 (6 hours)</li>
+                            <li class="text-base-content-secondary text-sm">14:00 - 18:30 (4.5 hours)</li>
+                        </ul>
+                        <button class="btn btn-secondary-outline w-full rounded-lg" id="edit-today-hours-btn">Edit Today's Hours</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Pending Actions -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-base-content mb-4">Pending Actions</h3>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-semibold text-base-content text-sm">May 2025 Record</h4>
+                                <div class="badge badge-info font-semibold">Awaiting Acknowledgment</div>
+                            </div>
+                            <p class="text-sm text-base-content-secondary mb-4">Master has signed your May record. Please acknowledge to complete the process.</p>
+                            <button class="btn btn-primary btn-sm rounded-lg" id="acknowledge-may-record-btn">Acknowledge Now</button>
+                        </div>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-semibold text-base-content text-sm">Reminder</h4>
+                                <div class="badge badge-warning font-semibold">Daily</div>
+                            </div>
+                            <p class="text-sm text-base-content-secondary">Don't forget to record your rest hours for today before midnight.</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-base-content mb-4">Recent Activity</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-success mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-base-content">June 16 hours recorded</p>
+                                    <p class="text-xs text-base-content-secondary">10.5 hours rest - Compliant</p>
+                                    <span class="text-xs text-base-content-secondary">2 hours ago</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-success mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-base-content">May 2025 record signed by Master</p>
+                                    <p class="text-xs text-base-content-secondary">Awaiting your acknowledgment</p>
+                                    <span class="text-xs text-base-content-secondary">1 day ago</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-error mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-base-content">June 14 violation detected</p>
+                                    <p class="text-xs text-base-content-secondary">Less than 10 hours rest in 24hr period</p>
+                                    <span class="text-xs text-base-content-secondary">3 days ago</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Records Page Content -->
+            <div id="my-records-page" class="page-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-base-content">My Records</h2>
+                    <div class="flex space-x-2">
+                        <div class="dropdown">
+                            <div tabindex="0" role="button" class="btn btn-sm btn-ghost rounded-lg">All Years <i class="fas fa-chevron-down ml-1"></i></div>
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-36">
+                                <li><a>2025</a></li>
+                                <li><a>2024</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown">
+                            <div tabindex="0" role="button" class="btn btn-sm btn-ghost rounded-lg">All Status <i class="fas fa-chevron-down ml-1"></i></div>
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-36">
+                                <li><a>Signed & Completed</a></li>
+                                <li><a>Awaiting My Signature</a></li>
+                                <li><a>Pending Master Signature</a></li>
+                            </ul>
+                        </div>
+                        <div class="relative">
+                            <input type="text" placeholder="Search records..." class="input input-bordered input-sm rounded-lg pl-8" />
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-base-content-secondary"></i>
+                        </div>
+                        <button class="btn btn-secondary-outline btn-sm rounded-lg" id="export-all-btn"><i class="fas fa-download mr-2"></i>Export All</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto bg-base-100 rounded-lg shadow-md">
+                    <table class="table w-full">
+                        <!-- head -->
+                        <thead>
+                            <tr>
+                                <th>PERIOD</th>
+                                <th>DAYS RECORDED</th>
+                                <th>STATUS</th>
+                                <th>MASTER SIGNATURE</th>
+                                <th>MY SIGNATURE</th>
+                                <th>COMPLIANCE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Row 1 -->
+                            <tr>
+                                <td>
+                                    <div class="font-bold">June 2025</div>
+                                    <div class="text-sm opacity-50">Jun 1 - Jun 30</div>
+                                </td>
+                                <td>30/30</td>
+                                <td><div class="badge badge-success font-semibold">Signed & Completed</div></td>
+                                <td><i class="fas fa-check text-success mr-1"></i>Signed</td>
+                                <td><i class="fas fa-check text-success mr-1"></i>Signed</td>
+                                <td><div class="badge badge-success">Compliant</div></td>
+                                <td class="flex items-center space-x-2">
+                                    <button class="btn btn-ghost btn-xs rounded-lg view-record-btn" data-record-id="june2025">View</button>
+                                    <i class="fas fa-download text-base-content-secondary cursor-pointer download-record-btn"></i>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr>
+                                <td>
+                                    <div class="font-bold">May 2025</div>
+                                    <div class="text-sm opacity-50">May 1 - May 31</div>
+                                </td>
+                                <td>31/31</td>
+                                <td><div class="badge badge-warning font-semibold">Awaiting My Signature</div></td>
+                                <td><i class="fas fa-check text-success mr-1"></i>Signed</td>
+                                <td id="may-signature-status"><span class="text-warning font-semibold">Pending</span></td>
+                                <td><div class="badge badge-success">Compliant</div></td>
+                                <td class="flex items-center space-x-2">
+                                    <button class="btn btn-ghost btn-xs rounded-lg view-record-btn" data-record-id="may2025">View</button>
+                                    <button class="btn btn-primary btn-xs rounded-lg" id="sign-may-record-btn">Sign</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Record Details Page Content (Now a top-level page-content) -->
+            <div id="record-details-page" class="page-content hidden">
+                <button class="btn btn-ghost btn-sm mb-4" id="back-to-records-list"><i class="fas fa-arrow-left mr-2"></i>Back to Records List</button>
+                <h2 class="text-xl font-semibold text-base-content mb-6" id="record-details-title">Record Details</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6 col-span-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-base-content" id="record-details-status-title">June 2025 Rest Hours Record</h3>
+                            <div class="badge badge-success font-semibold" id="record-details-overall-status">Signed & Completed</div>
+                        </div>
+                        <p class="text-base-content-secondary mb-6 text-sm">Complete monthly record with all signatures.</p>
+                        <div class="grid grid-cols-4 gap-4 text-center mb-8">
+                            <div class="bg-custom-blue p-4 rounded-lg">
+                                <div class="text-3xl font-bold text-custom-blue" id="record-days-recorded">30</div>
+                                <div class="text-sm text-base-content-secondary">Days Recorded</div>
+                            </div>
+                            <div class="bg-custom-green p-4 rounded-lg">
+                                <div class="text-3xl font-bold text-custom-green">100 %</div>
+                                <div class="text-sm text-base-content-secondary">Compliance Rate</div>
+                            </div>
+                            <div class="bg-custom-blue p-4 rounded-lg">
+                                <div class="text-3xl font-bold text-custom-blue" id="record-total-rest">360</div>
+                                <div class="text-sm text-base-content-secondary">Total Rest Hours</div>
+                            </div>
+                            <div class="bg-custom-blue p-4 rounded-lg">
+                                <div class="text-3xl font-bold text-custom-blue" id="record-total-work"></div> <!-- New element for total work hours -->
+                                <div class="text-sm text-base-content-secondary">Total Work Hours</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-base-content mb-4">Signature Status</h4>
+                                <div class="flex items-center mb-2">
+                                    <span class="text-base-content-secondary mr-2 text-sm">Master Signature:</span>
+                                    <span class="font-bold text-success text-sm"><i class="fas fa-check mr-1"></i>Signed (<span id="master-signature-date">June 30, 2025</span>)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-base-content-secondary mr-2 text-sm">Seafarer Signature:</span>
+                                    <span class="font-bold text-success text-sm"><i class="fas fa-check mr-1"></i>Signed (<span id="seafarer-signature-date">July 1, 2025</span>)</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-base-content mb-4">Record Actions</h4>
+                                <button class="btn btn-primary w-full mb-2 rounded-lg" id="print-pdf-report-btn"><i class="fas fa-print mr-2"></i>Print PDF Report</button>
+                                <button class="btn btn-secondary-outline w-full rounded-lg" id="export-csv-report-btn"><i class="fas fa-file-csv mr-2"></i>Export CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold text-base-content mb-4">Daily Rest Hours Breakdown</h3>
+                <p class="text-base-content-secondary mb-4 text-sm">Detailed view of each day's rest periods and compliance status</p>
+
+                <div class="overflow-x-auto bg-base-100 rounded-lg shadow-md">
+                    <table class="table w-full">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>REST PERIODS</th>
+                                <th>TOTAL HOURS</th>
+                                <th>7-DAY TOTAL</th>
+                                <th>STATUS</th>
+                                <th>COMMENT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-rest-breakdown-tbody-details">
+                            <!-- Dynamic content will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Record Hours Page Content -->
+            <div id="record-hours-page" class="page-content hidden">
+                <h2 class="text-xl font-semibold text-base-content mb-6">Record Hours</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left Section: Calendar -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <button class="btn btn-ghost btn-sm rounded-lg" id="prev-month-btn"><i class="fas fa-chevron-left"></i></button>
+                            <h3 class="text-lg font-semibold text-base-content" id="current-month-year">June 2025</h3>
+                            <button class="btn btn-ghost btn-sm rounded-lg" id="next-month-btn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <p class="text-center text-sm text-base-content-secondary mb-4">Select date to record hours</p>
+                        <div class="grid grid-cols-7 text-center gap-2 mb-6" id="calendar-grid">
+                            <div class="text-xs font-semibold text-base-content-secondary">Sun</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Mon</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Tue</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Wed</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Thu</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Fri</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Sat</div>
+
+                            <!-- Calendar days will be dynamically generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Right Section: Edit Hours & Rest Periods List -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-base-content mb-4" id="editing-hours-title">Editing Hours for June 17, 2025</h3>
+                        <p class="text-sm text-base-content-secondary mb-4">Add rest periods for the selected day</p>
+
+                        <div class="input-fields-container">
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <input type="time" class="input input-bordered w-full rounded-lg" id="start-time" value="00:00">
+                                <input type="time" class="input input-bordered w-full rounded-lg" id="end-time" value="06:00">
+                            </div>
+                            <div class="mb-4">
+                                <input type="text" placeholder="Activity / Comment (Optional)" class="input input-bordered w-full rounded-lg" id="comment-input">
+                            </div>
+                            <button class="btn btn-primary w-full mb-6 rounded-lg" id="add-rest-period-btn"><i class="fas fa-plus mr-2"></i>Add Rest Period</button>
+                        </div>
+
+                        <h4 class="text-sm font-semibold text-base-content-secondary mb-2">Added Rest Periods</h4>
+                        <div class="space-y-3 mb-6" id="rest-periods-list">
+                            <!-- Rest periods will be dynamically added here -->
+                        </div>
+                        <div class="flex justify-between space-x-4">
+                            <button class="btn btn-primary w-1/2 rounded-lg" id="save-record-btn"><i class="fas fa-save mr-2"></i>Save Record</button>
+                            <button class="btn btn-success w-1/2 rounded-lg" id="sign-and-send-btn"><i class="fas fa-paper-plane mr-2"></i>Sign & Send</button>
+                        </div>
+                        <button class="btn btn-secondary-outline w-full mt-4 rounded-lg hidden" id="edit-with-reason-btn"><i class="fas fa-edit mr-2"></i>Edit with Reason</button>
+                    </div>
+                </div>
+
+                <!-- 24-Hour Timeline Section - Now full width below other cards -->
+                <div class="card bg-base-100 shadow-md rounded-lg p-6 mt-6">
+                    <h4 class="text-lg font-semibold text-base-content-secondary mb-2">24-Hour Timeline</h4>
+                    <div class="w-full bg-gray-200 rounded-lg h-10 relative overflow-hidden" id="timeline-chart">
+                        <!-- Timeline segments will be dynamically generated here -->
+                    </div>
+                    <div class="flex justify-between text-xs text-base-content-secondary mt-2">
+                        <span>00:00</span><span>03:00</span><span>06:00</span><span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span><span>24:00</span>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-4">
+                        <div class="flex items-center">
+                            <span class="w-4 h-4 bg-green-500 rounded-full mr-2"></span>
+                            <span class="text-sm text-base-content">Rest Period</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-4 h-4 bg-gray-400 rounded-full mr-2"></span>
+                            <span class="text-sm text-base-content">Work Period</span>
+                        </div>
+                    </div>
+                    <div class="text-right mt-4">
+                        <div class="text-base-content text-sm">Total Rest: <span class="font-bold" id="total-rest-hours">0 hours</span></div>
+                        <div class="text-base-content text-sm">Total Work: <span class="font-bold" id="total-work-hours">0 hours</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page Content (Placeholder) -->
+            <div id="profile-page" class="page-content hidden">
+                <h2 class="text-xl font-semibold text-base-content mb-6">Profile Settings</h2>
+                <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                    <div class="flex flex-col md:flex-row md:space-x-8">
+                        <div class="flex-1 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Name</label>
+                                <input type="text" id="profile-name" value="John Smith" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Position</label>
+                                <input type="text" id="profile-position" value="Deck Officer" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Email</label>
+                                <input type="email" id="profile-email" value="john.smith@example.com" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Contact Number</label>
+                                <input type="text" id="profile-contact" value="+1 (555) 123-4567" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                        </div>
+                        <div class="flex-1 space-y-4 mt-6 md:mt-0">
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Preferred Theme</label>
+                                <select id="profile-theme" class="select select-bordered w-full rounded-lg" disabled>
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                </select>
+                            </div>
+                            <div class="pt-4">
+                                <h4 class="text-sm font-medium text-base-content-secondary mb-2">Password Settings</h4>
+                                <button class="btn btn-secondary-outline w-full rounded-lg">Change Password</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 flex justify-end space-x-4">
+                        <button class="btn btn-secondary-outline hidden" id="profile-cancel-btn">Cancel</button>
+                        <button class="btn btn-primary" id="profile-edit-save-btn">Edit Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Edit Reason Modal -->
+    <dialog id="edit-reason-modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">Reason for Editing</h3>
+            <p class="py-4">Please select a reason for editing this signed record:</p>
+            <div class="form-control">
+                <label class="label cursor-pointer">
+                    <span class="label-text">Mistake on initial entry</span>
+                    <input type="radio" name="edit-reason" class="radio radio-primary" value="Mistake on initial entry" checked />
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="label cursor-pointer">
+                    <span class="label-text">Asked to edit by Captain</span>
+                    <input type="radio" name="edit-reason" class="radio radio-primary" value="Asked to edit by Captain" />
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="label cursor-pointer">
+                    <span class="label-text">Edit with comments</span>
+                    <input type="radio" name="edit-reason" class="radio radio-primary" value="Edit with comments" />
+                </label>
+            </div>
+            <textarea id="edit-comment-textarea" class="textarea textarea-bordered w-full mt-4 hidden" placeholder="Add your comments here..."></textarea>
+            <div class="modal-action">
+                <button class="btn btn-primary" id="confirm-edit-reason-btn">Confirm Edit</button>
+                <button class="btn btn-ghost" id="cancel-edit-reason-btn">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            const pageTitle = document.getElementById('page-title');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn'); // Hamburger/Close in header
+            const quickNavIcons = document.getElementById('quick-nav-icons');
+
+            // Record Hours Page Elements
+            const calendarGrid = document.getElementById('calendar-grid');
+            const currentMonthYearDisplay = document.getElementById('current-month-year');
+            const prevMonthBtn = document.getElementById('prev-month-btn');
+            const nextMonthBtn = document.getElementById('next-month-btn');
+            const editingHoursTitle = document.getElementById('editing-hours-title');
+            const startTimeInput = document.getElementById('start-time');
+            const endTimeInput = document.getElementById('end-time');
+            const commentInput = document.getElementById('comment-input');
+            const addRestPeriodBtn = document.getElementById('add-rest-period-btn');
+            const restPeriodsList = document.getElementById('rest-periods-list');
+            const saveRecordBtn = document.getElementById('save-record-btn'); // Renamed
+            const signAndSendBtn = document.getElementById('sign-and-send-btn'); // New
+            const editWithReasonBtn = document.getElementById('edit-with-reason-btn'); // New
+            const inputFieldsContainer = document.querySelector('.input-fields-container'); // Container for edit fields
+
+            const timelineChart = document.getElementById('timeline-chart');
+            const totalRestHoursDisplay = document.getElementById('total-rest-hours');
+            const totalWorkHoursDisplay = document.getElementById('total-work-hours');
+
+            // My Records Page Elements
+            const myRecordsPage = document.getElementById('my-records-page');
+            const recordDetailsPage = document.getElementById('record-details-page');
+            const backToRecordsListBtn = document.getElementById('back-to-records-list');
+            const dailyRestBreakdownTbodyDetails = document.getElementById('daily-rest-breakdown-tbody-details');
+            const printPdfReportBtn = document.getElementById('print-pdf-report-btn');
+            const exportCsvReportBtn = document.getElementById('export-csv-report-btn');
+
+            // Edit Reason Modal Elements
+            const editReasonModal = document.getElementById('edit-reason-modal');
+            const confirmEditReasonBtn = document.getElementById('confirm-edit-reason-btn');
+            const cancelEditReasonBtn = document.getElementById('cancel-edit-reason-btn');
+            const editCommentTextarea = document.getElementById('edit-comment-textarea');
+            const editReasonRadios = document.querySelectorAll('input[name="edit-reason"]');
+            const toastContainer = document.getElementById('toast-container');
+
+            // Profile Page Elements
+            const profileNameInput = document.getElementById('profile-name');
+            const profilePositionInput = document.getElementById('profile-position');
+            const profileEmailInput = document.getElementById('profile-email');
+            const profileContactInput = document.getElementById('profile-contact');
+            const profileThemeSelect = document.getElementById('profile-theme');
+            const profileEditSaveBtn = document.getElementById('profile-edit-save-btn');
+            const profileCancelBtn = document.getElementById('profile-cancel-btn');
+
+
+            // --- Sidebar Toggle Logic ---
+            let isSidebarOpen = window.innerWidth >= 1024; // Sidebar open by default on larger screens
+
+            // Function to update sidebar visibility and button icon
+            const updateSidebarVisibility = () => {
+                if (isSidebarOpen) {
+                    sidebar.classList.remove('sidebar-hidden');
+                    sidebar.classList.add('sidebar-visible');
+                    // Change header toggle button to close icon
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.innerHTML = '<i class="fas fa-times text-xl"></i>';
+                        sidebarToggleBtn.classList.remove('hidden'); // Ensure it's visible on small
+                    }
+                    // Hide quick nav icons when sidebar is open
+                    if (quickNavIcons) {
+                        quickNavIcons.classList.add('hidden');
+                    }
+                } else {
+                    sidebar.classList.remove('sidebar-visible');
+                    sidebar.classList.add('sidebar-hidden');
+                    // Change header toggle button to menu icon
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+                        sidebarToggleBtn.classList.remove('hidden'); // Ensure it's visible on small
+                    }
+                    // Show quick nav icons only on small screens when sidebar is closed
+                    if (quickNavIcons && window.innerWidth < 1024) {
+                        quickNavIcons.classList.remove('hidden'); // Make sure it's not hidden
+                    } else if (quickNavIcons) {
+                        quickNavIcons.classList.add('hidden'); // Hide on large screens
+                    }
+                }
+            };
+
+            const toggleSidebar = () => {
+                isSidebarOpen = !isSidebarOpen;
+                updateSidebarVisibility();
+            };
+
+            // Initial setup for sidebar visibility and button state
+            updateSidebarVisibility();
+
+            // Event listener for the header hamburger button (opens/closes sidebar)
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', toggleSidebar);
+            }
+
+            // Close sidebar when clicking outside on small screens
+            document.addEventListener('click', (e) => {
+                const isClickInsideSidebar = sidebar.contains(e.target);
+                const isClickOnToggleButton = sidebarToggleBtn && sidebarToggleBtn.contains(e.target);
+                const isClickOnNavLink = e.target.closest('.nav-link'); // Check if click is on a nav link
+                const isClickOnQuickNavLink = e.target.closest('.quick-nav-link'); // Check if click is on a quick nav link
+                const isClickInsideModal = editReasonModal && editReasonModal.contains(e.target); // Check if click is inside modal
+
+                // Close if click is outside sidebar, not on toggle button, not on any nav link, and sidebar is open on small screen
+                if (window.innerWidth < 1024 && isSidebarOpen && !isClickInsideSidebar && !isClickOnToggleButton && !isClickOnNavLink && !isClickOnQuickNavLink && !isClickInsideModal) {
+                    toggleSidebar();
+                }
+            });
+
+            // Handle resize: force sidebar open on large screens, and update button state
+            window.addEventListener('resize', () => {
+                const wasSidebarOpen = isSidebarOpen; // Capture current state before calculation
+                if (window.innerWidth >= 1024) {
+                    isSidebarOpen = true; // Force open
+                    // Hide the toggle button on large screens
+                    if (sidebarToggleBtn) sidebarToggleBtn.classList.add('hidden');
+                } else {
+                    // If it was open (from large screen resize), set it to closed for small screen
+                    // If it was already explicitly closed on small, keep it closed.
+                    if (wasSidebarOpen) {
+                        isSidebarOpen = false;
+                    }
+                    // Ensure the toggle button is visible on small screens
+                    if (sidebarToggleBtn) sidebarToggleBtn.classList.remove('hidden');
+                }
+                updateSidebarVisibility(); // Update sidebar and quickNavIcons visibility
+            });
+
+
+            // --- Page Navigation Logic ---
+            const setActivePage = (targetId) => {
+                // Remove active class from all nav links and hide all pages
+                navLinks.forEach(link => link.classList.remove('active', 'bg-blue-100', 'text-blue-800'));
+                pageContents.forEach(page => page.classList.add('hidden'));
+
+                // Add active class to the clicked nav link
+                const activeLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active', 'bg-blue-100', 'text-blue-800');
+                }
+
+                // Show the target page
+                const targetPage = document.getElementById(targetId);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    // Update page title based on the selected page
+                    pageTitle.textContent = activeLink ? activeLink.textContent.trim().replace(/^(.*?)\s/, '') : 'Dashboard'; // Removes icon text
+
+                    // Special handling for Record Details Page title if navigated directly
+                    if (targetId === 'record-details-page') {
+                        pageTitle.textContent = 'Record Details';
+                    }
+                }
+                // Update active state for quick nav links
+                document.querySelectorAll('.quick-nav-link').forEach(link => {
+                    if (link.dataset.target === targetId) {
+                        link.classList.add('text-primary'); // Highlight active quick nav icon
+                        link.classList.remove('text-white');
+                    } else {
+                        link.classList.remove('text-primary');
+                        link.classList.add('text-white');
+                    }
+                });
+
+                // Close sidebar after navigation on small screens
+                if (window.innerWidth < 1024 && isSidebarOpen) {
+                    toggleSidebar();
+                }
+
+                // Re-render calendar and timeline when navigating to Record Hours page
+                if (targetId === 'record-hours-page') {
+                    renderCalendar(currentYear, currentMonth);
+                    loadRestPeriodsForSelectedDate();
+                    updateTimeline();
+                }
+
+                // Handle Profile page state
+                if (targetId === 'profile-page') {
+                    setProfileEditMode(false); // Always start in view mode
+                }
+            };
+
+            // Event listener for navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent default link behavior
+                    const targetId = e.currentTarget.dataset.target;
+                    setActivePage(targetId);
+                });
+            });
+
+            // Event listener for quick nav icons
+            document.querySelectorAll('.quick-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.currentTarget.dataset.target;
+                    setActivePage(targetId);
+                });
+            });
+
+
+            // Set initial active page to Dashboard on load
+            setActivePage('dashboard-page');
+
+            // --- Toast Notification Function ---
+            const showToast = (message, duration = 3000) => {
+                const toastItem = document.createElement('div');
+                toastItem.classList.add('toast-item');
+                toastItem.textContent = message;
+                toastContainer.appendChild(toastItem);
+
+                // Force reflow to ensure transition plays
+                void toastItem.offsetWidth;
+
+                toastItem.classList.add('show');
+
+                setTimeout(() => {
+                    toastItem.classList.remove('show');
+                    toastItem.addEventListener('transitionend', () => {
+                        toastItem.remove();
+                    }, { once: true });
+                }, duration);
+            };
+
+
+            // --- Record Hours Page Logic (adapted for new buttons) ---
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            let selectedDate = new Date(); // Represents the currently selected date in the calendar
+
+            // Simulate storage for daily records, keyed by ISO-YYYY-MM-DD
+            // Each entry will be { restPeriods: [], isSignedAndSent: boolean, editReason: string | null }
+            const dailyRecords = {};
+
+            // Helper to get date string for key
+            const getDateString = (date) => date.toISOString().split('T')[0];
+
+            // Initialize current day's data if not present
+            const initDailyRecord = (date) => {
+                const dateString = getDateString(date);
+                if (!dailyRecords[dateString]) {
+                    dailyRecords[dateString] = {
+                        restPeriods: [],
+                        isSignedAndSent: false,
+                        editReason: null,
+                        lastModified: new Date().toISOString()
+                    };
+                }
+            };
+            initDailyRecord(selectedDate); // Initialize for today
+
+
+            // Function to update the state of the input fields and buttons based on signed status
+            const updateRecordHoursUIState = () => {
+                const recordForSelectedDate = dailyRecords[getDateString(selectedDate)];
+                const isSigned = recordForSelectedDate && recordForSelectedDate.isSignedAndSent;
+
+                // Toggle visibility of save/sign vs. edit button
+                if (saveRecordBtn) saveRecordBtn.classList.toggle('hidden', isSigned);
+                if (signAndSendBtn) signAndSendBtn.classList.toggle('hidden', isSigned);
+                if (editWithReasonBtn) editWithReasonBtn.classList.toggle('hidden', !isSigned);
+
+                // Disable/enable input fields
+                const inputsDisabled = isSigned;
+                if (startTimeInput) startTimeInput.disabled = inputsDisabled;
+                if (endTimeInput) endTimeInput.disabled = inputsDisabled;
+                if (commentInput) commentInput.disabled = inputsDisabled;
+                if (addRestPeriodBtn) addRestPeriodBtn.disabled = inputsDisabled;
+
+                // Disable/enable edit/delete buttons on existing rest periods
+                document.querySelectorAll('#rest-periods-list .edit-period-btn, #rest-periods-list .delete-period-btn').forEach(btn => {
+                    btn.disabled = inputsDisabled;
+                });
+            };
+
+
+            // Function to calculate duration between two times in hours
+            const calculateDuration = (start, end) => {
+                const [startHour, startMinute] = start.split(':').map(Number);
+                const [endHour, endMinute] = end.split(':').map(Number);
+
+                let totalMinutes = (endHour * 60 + endMinute) - (startHour * 60 + startMinute);
+                if (totalMinutes < 0) { // Handle overnight periods
+                    totalMinutes += 24 * 60;
+                }
+                return totalMinutes / 60;
+            };
+
+            // Function to render the calendar
+            const renderCalendar = (year, month) => {
+                if (!calendarGrid) return; // Defensive check
+                calendarGrid.innerHTML = `
+                    <div class="text-xs font-semibold text-base-content-secondary">Sun</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Mon</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Tue</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Wed</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Thu</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Fri</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Sat</div>
+                `; // Reset grid, keep headers
+
+                if (currentMonthYearDisplay) {
+                    currentMonthYearDisplay.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+                }
+
+                const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 for Sunday, 6 for Saturday
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+                // Fill in leading empty days (from previous month)
+                for (let i = firstDayOfMonth; i > 0; i--) {
+                    const day = document.createElement('div');
+                    day.classList.add('text-base-content-secondary', 'opacity-50', 'p-2', 'cursor-not-allowed');
+                    day.textContent = daysInPrevMonth - i + 1;
+                    calendarGrid.appendChild(day);
+                }
+
+                // Fill in days of the current month
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const day = document.createElement('div');
+                    day.classList.add('p-2', 'border', 'rounded-lg', 'hover:bg-base-200', 'cursor-pointer', 'calendar-day');
+                    day.textContent = i;
+                    day.dataset.date = i;
+                    day.dataset.month = month + 1; // 1-indexed month
+                    day.dataset.year = year;
+
+                    // Add visual indicator for days with data or signed status (simulated)
+                    const dateToCheck = new Date(year, month, i);
+                    const record = dailyRecords[getDateString(dateToCheck)];
+                    if (record && (record.restPeriods.length > 0 || record.isSignedAndSent)) {
+                        day.classList.add('bg-blue-100', 'text-blue-800'); // Indicate data/signed
+                    }
+
+                    if (i === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear()) {
+                        day.classList.add('bg-blue-200', 'text-blue-800', 'font-bold', 'transition-colors', 'duration-200');
+                    }
+
+                    day.addEventListener('click', () => {
+                        document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('bg-blue-200', 'text-blue-800', 'font-bold'));
+                        day.classList.add('bg-blue-200', 'text-blue-800', 'font-bold');
+                        selectedDate = new Date(year, month, i);
+                        initDailyRecord(selectedDate); // Ensure record exists for selected day
+                        if (editingHoursTitle) {
+                            editingHoursTitle.textContent = `Editing Hours for ${selectedDate.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+                        }
+                        loadRestPeriodsForSelectedDate();
+                        updateTimeline();
+                        updateRecordHoursUIState(); // Update UI state for new selected date
+                    });
+                    calendarGrid.appendChild(day);
+                }
+
+                // Fill in trailing empty days (from next month)
+                const totalCells = firstDayOfMonth + daysInMonth;
+                const remainingCells = 42 - totalCells; // Max 6 rows * 7 days = 42 cells
+                for (let i = 1; i <= remainingCells; i++) {
+                    const day = document.createElement('div');
+                    day.classList.add('text-base-content-secondary', 'opacity-50', 'p-2', 'cursor-not-allowed');
+                    day.textContent = i;
+                    calendarGrid.appendChild(day);
+                }
+            };
+
+            // Function to load/simulate rest periods for the selected date
+            const loadRestPeriodsForSelectedDate = () => {
+                const record = dailyRecords[getDateString(selectedDate)];
+                restPeriods = record ? [...record.restPeriods] : []; // Load a copy
+
+                // Initial sample data for June 17, 2025, if no custom data exists for today
+                const todayString = getDateString(new Date());
+                const selectedDateString = getDateString(selectedDate);
+
+                if (selectedDateString === todayString && !dailyRecords[selectedDateString].isLoadedWithSample) {
+                    if (restPeriods.length === 0) { // Only add sample if truly empty
+                        restPeriods = [
+                            { start: '00:00', end: '06:00', comment: 'Routine night rest' },
+                            { start: '14:00', end: '18:30', comment: 'Afternoon break' },
+                            { start: '20:00', end: '23:30', comment: 'Evening rest before next shift' }
+                        ];
+                        dailyRecords[selectedDateString].restPeriods = restPeriods; // Save initial sample
+                    }
+                    dailyRecords[selectedDateString].isLoadedWithSample = true; // Mark as loaded to prevent re-adding
+                }
+
+                renderRestPeriods();
+                updateRecordHoursUIState(); // Update UI state after loading periods
+            };
+
+            // Function to render rest periods in the list
+            const renderRestPeriods = () => {
+                if (!restPeriodsList) return; // Defensive check
+                restPeriodsList.innerHTML = '';
+                let totalRestDuration = 0;
+                restPeriods.forEach((period, index) => {
+                    const duration = calculateDuration(period.start, period.end);
+                    totalRestDuration += duration;
+
+                    const periodDiv = document.createElement('div');
+                    periodDiv.classList.add('flex', 'justify-between', 'items-center', 'p-3', 'bg-base-200', 'rounded-lg');
+                    periodDiv.innerHTML = `
+                        <div>
+                            <div class="font-medium text-base-content">${period.start} - ${period.end}</div>
+                            <div class="text-sm text-base-content-secondary">${duration.toFixed(1)} hours</div>
+                            ${period.comment ? `<div class="text-xs text-base-content-secondary italic mt-1">Comment: ${period.comment}</div>` : ''}
+                        </div>
+                        <div class="space-x-2">
+                            <button class="btn btn-ghost btn-xs text-info rounded-lg edit-period-btn" data-index="${index}">Edit</button>
+                            <button class="btn btn-ghost btn-xs text-error rounded-lg delete-period-btn" data-index="${index}">Delete</button>
+                        </div>
+                    `;
+                    restPeriodsList.appendChild(periodDiv);
+                });
+
+                // Add event listeners for edit/delete buttons
+                document.querySelectorAll('.edit-period-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.currentTarget.dataset.index);
+                        const periodToEdit = restPeriods[index];
+                        if (startTimeInput) startTimeInput.value = periodToEdit.start;
+                        if (endTimeInput) endTimeInput.value = periodToEdit.end;
+                        if (commentInput) commentInput.value = periodToEdit.comment || ''; // Populate comment input
+                        // Remove the period from the list as it's now being edited/replaced
+                        restPeriods.splice(index, 1);
+                        renderRestPeriods();
+                        updateTimeline();
+                        updateRecordHoursUIState(); // Re-evaluate UI state after edit
+                    });
+                });
+
+                document.querySelectorAll('.delete-period-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.currentTarget.dataset.index);
+                        restPeriods.splice(index, 1);
+                        renderRestPeriods();
+                        updateTimeline();
+                        updateRecordHoursUIState(); // Re-evaluate UI state after delete
+                    });
+                });
+
+                if (totalRestHoursDisplay) totalRestHoursDisplay.textContent = `${totalRestDuration.toFixed(1)} hours`;
+                if (totalWorkHoursDisplay) totalWorkHoursDisplay.textContent = `${(24 - totalRestDuration).toFixed(1)} hours`;
+            };
+
+            // Function to update the 24-hour timeline chart
+            const updateTimeline = () => {
+                if (!timelineChart) return; // Defensive check
+                timelineChart.innerHTML = ''; // Clear existing segments
+
+                // Sort rest periods by start time
+                restPeriods.sort((a, b) => {
+                    const [ha, ma] = a.start.split(':').map(Number);
+                    const [hb, mb] = b.start.split(':').map(Number);
+                    if (ha !== hb) return ha - hb;
+                    return ma - mb;
+                });
+
+                let currentTime = 0; // In hours from 00:00
+
+                restPeriods.forEach(period => {
+                    const startHour = parseFloat(period.start.split(':')[0]) + parseFloat(period.start.split(':')[1]) / 60;
+                    const endHour = parseFloat(period.end.split(':')[0]) + parseFloat(period.end.split(':')[1]) / 60;
+                    let duration = endHour - startHour;
+                    if (duration < 0) duration += 24; // Handle overnight periods
+
+                    // Add work period if there's a gap
+                    if (startHour > currentTime) {
+                        const workDuration = startHour - currentTime;
+                        const workWidth = (workDuration / 24) * 100;
+                        const workLeft = (currentTime / 24) * 100;
+                        const workDiv = document.createElement('div');
+                        workDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg'); /* Added rounded-lg */
+                        workDiv.style.left = `${workLeft}%`;
+                        workDiv.style.width = `${workWidth}%`;
+                        timelineChart.appendChild(workDiv);
+                    }
+
+                    // Add rest period
+                    const restWidth = (duration / 24) * 100;
+                    const restLeft = (startHour / 24) * 100;
+                    const restDiv = document.createElement('div');
+                    restDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-green-500', 'rounded-lg');
+                    restDiv.style.left = `${restLeft}%`;
+                    restDiv.style.width = `${restWidth}%`;
+                    timelineChart.appendChild(restDiv);
+
+                    currentTime = endHour;
+                    if (currentTime >= 24) currentTime -= 24; // Reset for next day if passed midnight
+                });
+
+                // Add remaining work period until end of day if any
+                if (currentTime < 24 && restPeriods.length > 0) {
+                    const lastPeriodEndHour = parseFloat(restPeriods[restPeriods.length - 1].end.split(':')[0]) + parseFloat(restPeriods[restPeriods.length - 1].end.split(':')[1]) / 60;
+                    if (lastPeriodEndHour < 24) { // Only if the last period doesn't extend past midnight
+                        const workDuration = 24 - lastPeriodEndHour;
+                        const workWidth = (workDuration / 24) * 100;
+                        const workLeft = (lastPeriodEndHour / 24) * 100;
+                        const workDiv = document.createElement('div');
+                        workDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg'); /* Added rounded-lg */
+                        workDiv.style.left = `${workLeft}%`;
+                        workDiv.style.width = `${workWidth}%`;
+                        timelineChart.appendChild(workDiv);
+                    }
+                }
+                 // Handle the case where there are no rest periods
+                if (restPeriods.length === 0) {
+                    const fullDayWorkDiv = document.createElement('div');
+                    fullDayWorkDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg'); /* Added rounded-lg */
+                    fullDayWorkDiv.style.left = '0%';
+                    fullDayWorkDiv.style.width = '100%';
+                    timelineChart.appendChild(fullDayWorkDiv);
+                }
+            };
+
+            // Save Record Button
+            if (saveRecordBtn) {
+                saveRecordBtn.addEventListener('click', () => {
+                    dailyRecords[getDateString(selectedDate)].restPeriods = [...restPeriods];
+                    dailyRecords[getDateString(selectedDate)].lastModified = new Date().toISOString();
+                    showToast('Record saved successfully!');
+                    console.log('Saved rest periods for:', selectedDate.toDateString(), dailyRecords[getDateString(selectedDate)]);
+                });
+            }
+
+            // Sign & Send Button
+            if (signAndSendBtn) {
+                signAndSendBtn.addEventListener('click', () => {
+                    dailyRecords[getDateString(selectedDate)].restPeriods = [...restPeriods]; // Save current edits before signing
+                    dailyRecords[getDateString(selectedDate)].isSignedAndSent = true;
+                    dailyRecords[getDateString(selectedDate)].lastModified = new Date().toISOString();
+                    dailyRecords[getDateString(selectedDate)].signedDate = new Date().toISOString(); // Simulate signed date
+                    showToast('Record Signed and Sent!');
+                    console.log('Signed and sent record for:', selectedDate.toDateString(), dailyRecords[getDateString(selectedDate)]);
+                    updateRecordHoursUIState(); // Update UI to view-only
+                });
+            }
+
+            // Edit with Reason Button
+            if (editWithReasonBtn) {
+                editWithReasonBtn.addEventListener('click', () => {
+                    editReasonModal.showModal();
+                    // Reset radio buttons and textarea
+                    editReasonRadios[0].checked = true; // Select first option by default
+                    editCommentTextarea.classList.add('hidden'); // Hide comment area initially
+                    editCommentTextarea.value = ''; // Clear any previous comment
+                });
+            }
+
+            // Edit Reason Modal Logic
+            editReasonRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.value === 'Edit with comments') {
+                        editCommentTextarea.classList.remove('hidden');
+                    } else {
+                        editCommentTextarea.classList.add('hidden');
+                    }
+                });
+            });
+
+            if (confirmEditReasonBtn) {
+                confirmEditReasonBtn.addEventListener('click', () => {
+                    const selectedReason = document.querySelector('input[name="edit-reason"]:checked').value;
+                    const comment = editCommentTextarea.value.trim();
+
+                    const record = dailyRecords[getDateString(selectedDate)];
+                    record.isSignedAndSent = false; // Allow editing again
+                    record.editReason = comment ? `${selectedReason}: ${comment}` : selectedReason;
+                    record.lastModified = new Date().toISOString(); // Update last modified
+                    record.signedDate = null; // Clear signed date if re-editing
+
+                    showToast('Record is now editable with reason.');
+                    console.log('Record unlocked for editing:', record);
+                    editReasonModal.close();
+                    updateRecordHoursUIState(); // Re-enable editing fields
+                });
+            }
+
+            if (cancelEditReasonBtn) {
+                cancelEditReasonBtn.addEventListener('click', () => {
+                    editReasonModal.close();
+                });
+            }
+
+
+            if (addRestPeriodBtn) {
+                addRestPeriodBtn.addEventListener('click', () => {
+                    const start = startTimeInput ? startTimeInput.value : '';
+                    const end = endTimeInput ? endTimeInput.value : '';
+                    const comment = commentInput ? commentInput.value.trim() : ''; // Get comment
+
+                    if (start && end) {
+                        restPeriods.push({ start, end, comment }); // Store comment
+                        renderRestPeriods();
+                        updateTimeline();
+                        if (startTimeInput) startTimeInput.value = '00:00'; // Reset inputs
+                        if (endTimeInput) endTimeInput.value = '00:00';
+                        if (commentInput) commentInput.value = ''; // Clear comment input
+                    } else {
+                        console.error('Please enter both start and end times.');
+                    }
+                });
+            }
+
+
+            if (prevMonthBtn) {
+                prevMonthBtn.addEventListener('click', () => {
+                    currentMonth--;
+                    if (currentMonth < 0) {
+                        currentMonth = 11;
+                        currentYear--;
+                    }
+                    renderCalendar(currentYear, currentMonth);
+                    loadRestPeriodsForSelectedDate(); // Refresh periods based on new month/year
+                    updateTimeline();
+                });
+            }
+
+
+            if (nextMonthBtn) {
+                nextMonthBtn.addEventListener('click', () => {
+                    currentMonth++;
+                    if (currentMonth > 11) {
+                        currentMonth = 0;
+                        currentYear++;
+                    }
+                    renderCalendar(currentYear, currentMonth);
+                    loadRestPeriodsForSelectedDate(); // Refresh periods based on new month/year
+                    updateTimeline();
+                });
+            }
+
+
+            // --- Dashboard and My Records Pages (existing logic) ---
+            const continueRecordingBtn = document.getElementById('continue-recording-btn');
+            if (continueRecordingBtn) {
+                continueRecordingBtn.addEventListener('click', () => {
+                    setActivePage('record-hours-page');
+                });
+            }
+
+            const editTodayHoursBtn = document.getElementById('edit-today-hours-btn');
+            if (editTodayHoursBtn) {
+                editTodayHoursBtn.addEventListener('click', () => {
+                    setActivePage('record-hours-page');
+                    // Optionally pre-select today's date in the calendar or focus on today's entry
+                    const today = new Date();
+                    const todayFormatted = today.getDate();
+                    const currentMonth = today.toLocaleString('default', { month: 'long' });
+                    const currentYear = today.getFullYear();
+                    const currentMonthYearElement = document.getElementById('current-month-year');
+                    if (currentMonthYearElement) {
+                         currentMonthYearElement.textContent = `${currentMonth} ${currentYear}`;
+                    }
+                    renderCalendar(today.getFullYear(), today.getMonth());
+                    // Simulate selecting today by adding 'selected' class
+                    const todayElement = document.querySelector(`.calendar-day[data-date="${todayFormatted}"][data-month="${today.getMonth() + 1}"]`);
+                    if (todayElement) {
+                        document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('bg-blue-200', 'text-blue-800', 'font-bold'));
+                        todayElement.classList.add('bg-blue-200', 'text-blue-800', 'font-bold');
+                        const editingHoursTitleElement = document.getElementById('editing-hours-title');
+                        if (editingHoursTitleElement) {
+                             editingHoursTitleElement.textContent = `Editing Hours for ${today.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+                        }
+                    }
+                });
+            }
+
+
+            const acknowledgeMayRecordBtn = document.getElementById('acknowledge-may-record-btn');
+            if (acknowledgeMayRecordBtn) {
+                acknowledgeMayRecordBtn.addEventListener('click', () => {
+                    const maySignatureStatus = document.getElementById('may-signature-status');
+                    if (maySignatureStatus) {
+                        maySignatureStatus.innerHTML = '<i class="fas fa-check text-success mr-1"></i>Signed';
+                    }
+                    // Update the recordData for May 2025 to reflect the signature
+                    if (recordData.may2025) {
+                        recordData.may2025.seafarerSignatureDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                        recordData.may2025.overallStatus = 'Signed & Completed';
+                    }
+                    if (e.target) { // Check if target exists before attempting to remove
+                        e.target.remove(); // Remove the sign button after clicking
+                    }
+                    console.log('May 2025 record acknowledged!');
+                });
+            }
+
+
+            // Sample data for record details
+            const recordData = {
+                june2025: {
+                    title: 'June 2025 Rest Hours Record',
+                    overallStatus: 'Signed & Completed',
+                    daysRecorded: 30, // Changed to number for calculation
+                    complianceRate: '100 %',
+                    totalRest: 360, // Changed to number for calculation
+                    averageDailyRest: 12, // Changed to number for calculation
+                    masterSignatureDate: 'June 30, 2025',
+                    seafarerSignatureDate: 'July 1, 2025',
+                    dailyBreakdown: [
+                        { date: 'June 1, 2025', dayOfWeek: 'Monday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Day 1 activities.' },
+                        { date: 'June 2, 2025', dayOfWeek: 'Tuesday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Morning watch.' },
+                        { date: 'June 3, 2025', dayOfWeek: 'Wednesday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Long day on deck.' },
+                        { date: 'June 4, 2025', dayOfWeek: 'Thursday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Routine maintenance.' },
+                        { date: 'June 5, 2025', dayOfWeek: 'Friday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Port arrival.' },
+                        { date: 'June 6, 2025', dayOfWeek: 'Saturday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Cargo operations.' },
+                        { date: 'June 7, 2025', dayOfWeek: 'Sunday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Off duty.' },
+                        { date: 'June 8, 2025', dayOfWeek: 'Monday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Paperwork.' },
+                        { date: 'June 9, 2025', dayOfWeek: 'Tuesday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Drills conducted.' },
+                        { date: 'June 10, 2025', dayOfWeek: 'Wednesday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Engine room checks.' },
+                        { date: 'June 11, 2025', dayOfWeek: 'Thursday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Navigation.' },
+                        { date: 'June 12, 2025', dayOfWeek: 'Friday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Cleaning duty.' },
+                        { date: 'June 13, 2025', dayOfWeek: 'Saturday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Weekend watch.' },
+                        { date: 'June 14, 2025', dayOfWeek: 'Sunday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Violated', comment: 'Emergency drill, disturbed rest.' }, // Example violation
+                        { date: 'June 15, 2025', dayOfWeek: 'Monday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Repair work.' },
+                        { date: 'June 16, 2025', dayOfWeek: 'Tuesday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Regular watch.' },
+                        { date: 'June 17, 2025', dayOfWeek: 'Wednesday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Daily tasks.' },
+                    ]
+                },
+                may2025: {
+                    title: 'May 2025 Rest Hours Record',
+                    overallStatus: 'Awaiting My Signature',
+                    daysRecorded: 31, // Changed to number for calculation
+                    complianceRate: '98 %',
+                    totalRest: 350, // Changed to number for calculation
+                    averageDailyRest: 11.3, // Changed to number for calculation
+                    masterSignatureDate: 'June 1, 2025',
+                    seafarerSignatureDate: 'Pending',
+                    dailyBreakdown: [
+                        { date: 'May 1, 2025', dayOfWeek: 'Thursday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Routine day.' },
+                        { date: 'May 2, 2025', dayOfWeek: 'Friday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Deck cleaning.' },
+                        { date: 'May 3, 2025', dayOfWeek: 'Saturday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Port stay.' },
+                    ]
+                }
+            };
+            let currentRecordId = null; // To store the ID of the currently viewed record
+
+            document.querySelectorAll('.view-record-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const recordId = e.currentTarget.dataset.recordId;
+                    const record = recordData[recordId];
+                    currentRecordId = recordId; // Set current record ID
+
+                    if (record) {
+                        // Populate record details
+                        const recordDetailsTitle = document.getElementById('record-details-title');
+                        if (recordDetailsTitle) recordDetailsTitle.textContent = `${record.title} Details`;
+                        const recordDetailsStatusTitle = document.getElementById('record-details-status-title');
+                        if (recordDetailsStatusTitle) recordDetailsStatusTitle.textContent = record.title;
+                        const recordDetailsOverallStatus = document.getElementById('record-details-overall-status');
+                        if (recordDetailsOverallStatus) recordDetailsOverallStatus.textContent = record.overallStatus;
+                        // Adjust badge color based on status
+                        if (record.overallStatus.includes('Awaiting')) {
+                             recordDetailsOverallStatus.classList.remove('badge-success');
+                             recordDetailsOverallStatus.classList.add('badge-warning');
+                        } else {
+                             recordDetailsOverallStatus.classList.remove('badge-warning');
+                             recordDetailsOverallStatus.classList.add('badge-success');
+                        }
+
+                        const recordDaysRecorded = document.getElementById('record-days-recorded');
+                        if (recordDaysRecorded) recordDaysRecorded.textContent = record.daysRecorded;
+                        const recordComplianceRate = document.getElementById('record-compliance-rate');
+                        if (recordComplianceRate) recordComplianceRate.textContent = record.complianceRate;
+                        const recordTotalRest = document.getElementById('record-total-rest');
+                        if (recordTotalRest) recordTotalRest.textContent = record.totalRest;
+                        const recordAverageDailyRest = document.getElementById('record-average-daily-rest');
+                        if (recordAverageDailyRest) recordAverageDailyRest.textContent = record.averageDailyRest;
+
+                        const recordTotalWork = document.getElementById('record-total-work');
+                        if (recordTotalWork) {
+                            const totalWorkHoursValue = (record.daysRecorded * 24) - record.totalRest;
+                            recordTotalWork.textContent = `${totalWorkHoursValue.toFixed(1)} hours`;
+                        }
+
+                        const masterSignatureDate = document.getElementById('master-signature-date');
+                        if (masterSignatureDate) masterSignatureDate.textContent = record.masterSignatureDate;
+                        const seafarerSignatureDate = document.getElementById('seafarer-signature-date');
+                        if (seafarerSignatureDate) seafarerSignatureDate.textContent = record.seafarerSignatureDate;
+
+
+                        // Clear existing breakdown and add new
+                        if (dailyRestBreakdownTbodyDetails) { // Use the correct ID for the details page tbody
+                            dailyRestBreakdownTbodyDetails.innerHTML = '';
+                            record.dailyBreakdown.forEach(day => {
+                                const row = document.createElement('tr');
+                                // Determine status badge class
+                                let statusBadgeClass = 'badge-success';
+                                if (day.status === 'Violated') {
+                                    statusBadgeClass = 'badge-error';
+                                } else if (day.status.includes('Awaiting') || day.status === 'Pending') {
+                                    statusBadgeClass = 'badge-warning';
+                                }
+
+                                row.innerHTML = `
+                                    <td>
+                                        <div class="font-bold">${day.date}</div>
+                                        <div class="text-sm opacity-50">${day.dayOfWeek}</div>
+                                    </td>
+                                    <td>${day.periods.join('<br>')}</td>
+                                    <td>${day.totalHours}</td>
+                                    <td>${day.sevenDayTotal}</td>
+                                    <td><div class="badge ${statusBadgeClass}">${day.status}</div></td>
+                                    <td><span class="text-xs text-base-content-secondary">${day.comment || ''}</span></td>
+                                `;
+                                dailyRestBreakdownTbodyDetails.appendChild(row);
+                            });
+                        }
+                        setActivePage('record-details-page'); // Navigate to the record details page
+                    }
+                });
+            });
+
+            if (backToRecordsListBtn) {
+                backToRecordsListBtn.addEventListener('click', () => {
+                    setActivePage('my-records-page'); // Navigate back to my records page
+                });
+            }
+
+            const signMayRecordBtn = document.getElementById('sign-may-record-btn');
+            if (signMayRecordBtn) {
+                signMayRecordBtn.addEventListener('click', (e) => {
+                    const maySignatureStatus = document.getElementById('may-signature-status');
+                    if (maySignatureStatus) {
+                        maySignatureStatus.innerHTML = '<i class="fas fa-check text-success mr-1"></i>Signed';
+                    }
+                    // Update the recordData for May 2025 to reflect the signature
+                    if (recordData.may2025) {
+                        recordData.may2025.seafarerSignatureDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                        recordData.may2025.overallStatus = 'Signed & Completed';
+                    }
+                    if (e.target) { // Check if target exists before attempting to remove
+                        e.target.remove(); // Remove the sign button after clicking
+                    }
+                    console.log('May 2025 record acknowledged!');
+                });
+            }
+
+
+            const exportAllBtn = document.getElementById('export-all-btn');
+            if (exportAllBtn) {
+                exportAllBtn.addEventListener('click', () => {
+                    console.log('Exporting all records...');
+                    // Placeholder for export functionality (e.g., generate PDF/CSV)
+                    // In a real app, this would trigger a download or server-sided process
+                });
+            }
+
+
+            if (printPdfReportBtn) {
+                printPdfReportBtn.addEventListener('click', () => {
+                    if (currentRecordId && recordData[currentRecordId]) {
+                        printRecordDetails(recordData[currentRecordId]);
+                    } else {
+                        console.error("No record selected to print.");
+                    }
+                });
+            }
+
+            // Function to export record details as CSV
+            const exportCsvReport = (record) => {
+                // Define CSV header
+                let csv = "DATE,REST PERIODS,TOTAL HOURS,7-DAY TOTAL,STATUS,COMMENT\n"; // Added COMMENT header
+
+                // Add daily breakdown data
+                record.dailyBreakdown.forEach(day => {
+                    const periods = day.periods.map(p => `"${p.replace(/"/g, '""')}"`).join('; '); // Handle commas/quotes within periods
+                    const comment = day.comment ? `"${day.comment.replace(/"/g, '""')}"` : '';
+                    csv += `"${day.date} (${day.dayOfWeek})",${periods},${day.totalHours},${day.sevenDayTotal},${day.status},${comment}\n`;
+                });
+
+                // Create a Blob and download link
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                if (link.download !== undefined) { // Feature detection for download attribute
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `${record.title.replace(/\s/g, '_')}_Report.csv`);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url); // Clean up the URL object
+                    console.log('CSV report generated and downloaded.');
+                } else {
+                    // Fallback for browsers that don't support download attribute
+                    console.warn('Your browser does not support the download attribute, CSV will open in new tab.');
+                    window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
+                }
+            };
+
+            if (exportCsvReportBtn) {
+                exportCsvReportBtn.addEventListener('click', () => {
+                    if (currentRecordId && recordData[currentRecordId]) {
+                        exportCsvReport(recordData[currentRecordId]);
+                    } else {
+                        console.error("No record selected to export CSV.");
+                    }
+                });
+            }
+
+
+            // Function to print record details
+            const printRecordDetails = (record) => {
+                const printWindow = window.open('', '', 'height=600,width=800');
+                if (!printWindow) {
+                    console.error("Pop-up blocked. Please allow pop-ups for this site to print.");
+                    return;
+                }
+
+                let dailyBreakdownHtml = '';
+                record.dailyBreakdown.forEach(day => {
+                    let statusClass = 'text-green-600'; // Default for compliant
+                    if (day.status === 'Violated') {
+                        statusClass = 'text-red-600';
+                    }
+                    dailyBreakdownHtml += `
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 8px 0;">
+                                <div style="font-weight: bold;">${day.date}</div>
+                                <div style="font-size: 0.875rem; opacity: 0.7;">${day.dayOfWeek}</div>
+                            </td>
+                            <td style="padding: 8px 0;">${day.periods.join('<br>')}</td>
+                            <td style="padding: 8px 0;">${day.totalHours}</td>
+                            <td style="padding: 8px 0;">${day.sevenDayTotal}</td>
+                            <td style="padding: 8px 0;"><span style="font-weight: 600; ${statusClass}">${day.status}</span></td>
+                            <td style="padding: 8px 0; font-size: 0.875rem; color: #6b7280;">${day.comment || ''}</td> <!-- Added comment -->
+                        </tr>
+                    `;
+                });
+
+                const printContent = `
+                    <html>
+                    <head>
+                        <title>${record.title} Report</title>
+                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                        <style>
+                            body { font-family: 'Inter', sans-serif; margin: 20px; color: #333; }
+                            h1, h2, h3 { color: #1f2937; }
+                            .section { margin-bottom: 20px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; }
+                            .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; text-align: center; margin-bottom: 20px; }
+                            .grid-item { background-color: #f3f4f6; padding: 10px; border-radius: 8px; }
+                            .grid-value { font-size: 2.25rem; font-weight: bold; color: #1d4ed8; }
+                            .grid-label { font-size: 0.875rem; color: #6b7280; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                            th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0; }
+                            th { background-color: #f9fafb; font-weight: 600; color: #4b5563; }
+                            .status-badge { font-weight: 600; }
+                            .text-green-600 { color: #059669; }
+                            .text-red-600 { color: #dc2626; }
+                            .text-orange-600 { color: #ea580c; } /* For warning/pending */
+                            .text-base-content-secondary { color: #6b7280; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 20px;">Rest Tracker Record Report</h1>
+                        <div class="section">
+                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 10px;">${record.title}</h2>
+                            <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 15px;">Overall Status: <span class="status-badge ${record.overallStatus.includes('Awaiting') ? 'text-orange-600' : 'text-green-600'}">${record.overallStatus}</span></p>
+                            <div class="grid-container">
+                                <div class="grid-item">
+                                    <div class="grid-value" style="color:#1e40af">${record.daysRecorded}</div>
+                                    <div class="grid-label">Days Recorded</div>
+                                </div>
+                                <div class="grid-item">
+                                    <div class="grid-value" style="color:#065f46">${record.complianceRate}</div>
+                                    <div class="grid-label">Compliance Rate</div>
+                                </div>
+                                <div class="grid-item">
+                                    <div class="grid-value" style="color:#1e40af">${record.totalRest}</div>
+                                    <div class="grid-label">Total Rest Hours</div>
+                                </div>
+                                <div class="grid-item">
+                                    <div class="grid-value" style="color:#1e40af">${(record.daysRecorded * 24) - record.totalRest}</div>
+                                    <div class="grid-label">Total Work Hours</div>
+                                </div>
+                            </div>
+                            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 10px;">Signature Status</h3>
+                            <p style="font-size: 0.875rem; margin-bottom: 5px;">Master Signature: <span style="font-weight: bold; color: #059669;">&#10003; Signed (${record.masterSignatureDate})</span></p>
+                            <p style="font-size: 0.875rem;">Seafarer Signature: <span style="font-weight: bold; ${record.seafarerSignatureDate === 'Pending' ? 'color: #ea580c;' : 'color: #059669;'}">${record.seafarerSignatureDate === 'Pending' ? 'Pending' : '&#10003; Signed (' + record.seafarerSignatureDate + ')'}</span></p>
+                        </div>
+
+                        <div class="section">
+                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 10px;">Daily Rest Hours Breakdown</h2>
+                            <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 15px;">Detailed view of each day's rest periods and compliance status</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>DATE</th>
+                                        <th>REST PERIODS</th>
+                                        <th>TOTAL HOURS</th>
+                                        <th>7-DAY TOTAL</th>
+                                        <th>STATUS</th>
+                                        <th>COMMENT</th> <!-- Added comment header for printing -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${dailyBreakdownHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                printWindow.document.open();
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                printWindow.focus(); // Focus on the new window
+                printWindow.print();
+                // Close after print dialog is closed or cancelled
+                printWindow.onafterprint = () => {
+                    printWindow.close();
+                };
+            };
+
+
+            // Initial render for Record Hours page
+            renderCalendar(currentYear, currentMonth);
+            loadRestPeriodsForSelectedDate(); // Load initial periods for today
+            updateTimeline();
+            updateRecordHoursUIState(); // Set initial UI state
+
+            // Set initial state for quick nav icons (should be visible if sidebar is hidden initially)
+            if (window.innerWidth < 1024 && !isSidebarOpen) {
+                quickNavIcons.classList.remove('hidden');
+            }
+
+            // --- Profile Page Logic ---
+            const profileFields = [
+                profileNameInput, profilePositionInput, profileEmailInput, profileContactInput, profileThemeSelect
+            ];
+
+            const setProfileEditMode = (isEditing) => {
+                profileFields.forEach(field => {
+                    if (field) field.disabled = !isEditing;
+                });
+
+                if (isEditing) {
+                    if (profileEditSaveBtn) {
+                        profileEditSaveBtn.textContent = 'Save Changes';
+                        profileEditSaveBtn.classList.remove('btn-primary');
+                        profileEditSaveBtn.classList.add('btn-success');
+                    }
+                    if (profileCancelBtn) profileCancelBtn.classList.remove('hidden');
+                } else {
+                    if (profileEditSaveBtn) {
+                        profileEditSaveBtn.textContent = 'Edit Profile';
+                        profileEditSaveBtn.classList.remove('btn-success');
+                        profileEditSaveBtn.classList.add('btn-primary');
+                    }
+                    if (profileCancelBtn) profileCancelBtn.classList.add('hidden');
+                }
+            };
+
+            // Initial profile state
+            setProfileEditMode(false);
+
+            if (profileEditSaveBtn) {
+                profileEditSaveBtn.addEventListener('click', () => {
+                    if (profileEditSaveBtn.textContent === 'Edit Profile') {
+                        setProfileEditMode(true);
+                    } else { // Save Changes
+                        // In a real app, save data to backend/storage
+                        showToast('Profile changes saved!');
+                        console.log('Profile saved:', {
+                            name: profileNameInput.value,
+                            position: profilePositionInput.value,
+                            email: profileEmailInput.value,
+                            contact: profileContactInput.value,
+                            theme: profileThemeSelect.value
+                        });
+                        setProfileEditMode(false);
+                    }
+                });
+            }
+
+            if (profileCancelBtn) {
+                profileCancelBtn.addEventListener('click', () => {
+                    // Revert changes (simulated - in real app, reload original data)
+                    if (profileNameInput) profileNameInput.value = "John Smith";
+                    if (profilePositionInput) profilePositionInput.value = "Deck Officer";
+                    if (profileEmailInput) profileEmailInput.value = "john.smith@example.com";
+                    if (profileContactInput) profileContactInput.value = "+1 (555) 123-4567";
+                    if (profileThemeSelect) profileThemeSelect.value = "light";
+                    showToast('Profile changes cancelled.');
+                    setProfileEditMode(false);
+                });
+            }
+
+            // Mock profile data
+            if (profileNameInput) profileNameInput.value = "John Smith";
+            if (profilePositionInput) profilePositionInput.value = "Deck Officer";
+            if (profileEmailInput) profileEmailInput.value = "john.smith@example.com";
+            if (profileContactInput) profileContactInput.value = "+1 (555) 123-4567";
+            if (profileThemeSelect) profileThemeSelect.value = "light";
+        });
+    </script>
+</body>
+</html>
