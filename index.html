@@ -241,9 +241,9 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col mx-0 px-0 py-4 sm:p-8 overflow-y-auto"> <!-- Reduced padding for mobile -->
+        <div class="flex-1 flex flex-col mx-0 px-0 py-4 sm:p-8 overflow-y-auto"> <!-- px-0 on mobile, p-8 on sm and up -->
             <!-- Top Nav/Header -->
-            <div class="flex justify-between items-center py-4 border-b border-base-200 mb-6 sticky top-0 bg-white z-10 rounded-b-lg shadow-sm px-0 sm:px-6"> <!-- Reduced horizontal padding for mobile -->
+            <div class="flex justify-between items-center py-4 border-b border-base-200 mb-6 sticky top-0 bg-white z-10 rounded-b-lg shadow-sm px-0 sm:px-6"> <!-- px-0 on mobile, px-6 on sm and up -->
                 <div class="flex items-center h-full">
                     <!-- Hamburger/Close button to open/close sidebar -->
                     <button id="sidebar-toggle-btn" class="btn btn-ghost btn-circle lg:hidden mr-4">
@@ -270,7 +270,7 @@
 
             <!-- Dashboard Page Content -->
             <div id="dashboard-page" class="page-content active">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4 sm:px-0"> <!-- Added px-4 for content inside -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6 col-span-full lg:col-span-2">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-base-content">June 2025 Record Status</h3>
@@ -279,7 +279,7 @@
                         <p class="text-base-content-secondary mb-6 text-sm">Track your monthly compliance progress.</p>
                         <div class="grid grid-cols-3 gap-4 text-center mb-8">
                             <div class="bg-custom-blue p-4 rounded-lg">
-                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue">17</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue" id="record-days-recorded">17</div>
                                 <div class="text-sm text-base-content-secondary">Days Recorded</div>
                             </div>
                             <div class="bg-custom-green p-4 rounded-lg">
@@ -319,7 +319,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 sm:px-0"> <!-- Added px-4 for internal content -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6">
                         <h3 class="text-lg font-semibold text-base-content mb-4">Pending Actions</h3>
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
@@ -451,7 +451,7 @@
                 <button class="btn btn-ghost btn-sm mb-4 ml-4 sm:ml-0" id="back-to-records-list"><i class="fas fa-arrow-left mr-2"></i>Back to Records List</button> <!-- Adjusted margin -->
                 <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Record Details</h2> <!-- Adjusted padding -->
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 px-4 sm:px-0"> <!-- Adjusted padding -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 px-4 sm:px-0"> <!-- Added px-4 for content inside -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6 col-span-full">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-base-content" id="record-details-status-title">June 2025 Rest Hours Record</h3>
@@ -522,7 +522,7 @@
             <div id="record-hours-page" class="page-content hidden">
                 <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Record Hours</h2> <!-- Adjusted padding -->
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 sm:px-0"> <!-- Adjusted padding -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 sm:px-0"> <!-- Added px-4 for content inside -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6">
                         <div class="flex justify-between items-center mb-6">
                             <button class="btn btn-ghost btn-sm rounded-lg" id="prev-month-btn"><i class="fas fa-chevron-left"></i></button>
@@ -530,6 +530,8 @@
                             <button class="btn btn-ghost btn-sm rounded-lg" id="next-month-btn"><i class="fas fa-chevron-right"></i></button>
                         </div>
                         <p class="text-center text-sm text-base-content-secondary mb-4">Select date to record hours</p>
+                        <!-- Message for future dates -->
+                        <p id="future-date-message" class="text-center text-error text-sm mb-4 hidden">This day has not happened yet. Hours cannot be entered for future dates.</p>
                         <div class="grid grid-cols-7 text-center gap-2 mb-6" id="calendar-grid">
                             <div class="text-xs font-semibold text-base-content-secondary">Sun</div>
                             <div class="text-xs font-semibold text-base-content-secondary">Mon</div>
@@ -594,7 +596,10 @@
 
             <div id="profile-page" class="page-content hidden">
                 <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Profile Settings</h2> <!-- Adjusted padding -->
-                <div class="card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6"> <!-- Adjusted padding -->
+                
+                <!-- Personal Settings Card -->
+                <div class="card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6 mb-6">
+                    <h3 class="text-lg font-semibold text-base-content mb-4">Personal Settings</h3>
                     <div class="flex flex-col md:flex-row md:space-x-8">
                         <div class="flex-1 space-y-4">
                             <div>
@@ -628,10 +633,54 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-8 flex justify-end space-x-4">
-                        <button class="btn btn-secondary-outline hidden" id="profile-cancel-btn">Cancel</button>
-                        <button class="btn btn-primary" id="profile-edit-save-btn">Edit Profile</button>
+                </div>
+
+                <!-- User & Schedule Settings Card -->
+                <div class="card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6 mb-6">
+                    <h3 class="text-lg font-semibold text-base-content mb-4">User & Schedule Settings</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-base-content-secondary mb-1">User Type</label>
+                            <select id="profile-user-type" class="select select-bordered w-full rounded-lg" disabled>
+                                <option value="">Select User Type</option>
+                                <option value="Deck Officer">Deck Officer</option>
+                                <option value="Engineer Officer">Engineer Officer</option>
+                                <option value="Rating">Rating</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-base-content-secondary mb-1">Schedule Type</label>
+                            <select id="profile-schedule-type" class="select select-bordered w-full rounded-lg" disabled>
+                                <option value="">Select Schedule</option>
+                                <option value="Custom Schedule">Custom Schedule</option> <!-- Option for custom schedule -->
+                            </select>
+                        </div>
+
+                        <!-- Custom Schedule Definition Area -->
+                        <div id="custom-schedule-section" class="hidden border border-base-200 p-4 rounded-lg bg-base-50 space-y-4">
+                            <h4 class="text-md font-semibold text-base-content mb-2">Define Custom Schedule</h4>
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Custom Schedule Name</label>
+                                <input type="text" id="custom-schedule-name-input" class="input input-bordered w-full rounded-lg" placeholder="e.g., My Unique Shift" disabled>
+                            </div>
+                            <h5 class="text-sm font-semibold text-base-content-secondary mb-2">Rest Periods for Custom Schedule</h5>
+                            <div id="custom-schedule-periods-list" class="space-y-2">
+                                <!-- Custom periods will be added here -->
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="time" id="custom-start-time" class="input input-bordered w-full rounded-lg" disabled>
+                                <input type="time" id="custom-end-time" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                            <input type="text" id="custom-comment-input" class="input input-bordered w-full rounded-lg" placeholder="Comment (Optional)" disabled>
+                            <button class="btn btn-primary btn-sm w-full rounded-lg" id="add-custom-period-btn" disabled><i class="fas fa-plus mr-2"></i>Add Period to Custom</button>
+                            <button class="btn btn-success w-full rounded-lg" id="save-custom-schedule-btn" disabled><i class="fas fa-save mr-2"></i>Save Custom Schedule</button>
+                        </div>
                     </div>
+                </div>
+
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button class="btn btn-secondary-outline hidden" id="profile-cancel-btn">Cancel</button>
+                    <button class="btn btn-primary" id="profile-edit-save-btn">Edit Profile</button>
                 </div>
             </div>
         </div>
@@ -685,6 +734,7 @@
             const prevMonthBtn = document.getElementById('prev-month-btn');
             const nextMonthBtn = document.getElementById('next-month-btn');
             const editingHoursTitle = document.getElementById('editing-hours-title');
+            const futureDateMessage = document.getElementById('future-date-message'); // New element
             const startTimeInput = document.getElementById('start-time');
             const endTimeInput = document.getElementById('end-time');
             const commentInput = document.getElementById('comment-input');
@@ -723,6 +773,68 @@
             const profileThemeSelect = document.getElementById('profile-theme');
             const profileEditSaveBtn = document.getElementById('profile-edit-save-btn');
             const profileCancelBtn = document.getElementById('profile-cancel-btn');
+            const profileUserTypeSelect = document.getElementById('profile-user-type'); // New
+            const profileScheduleTypeSelect = document.getElementById('profile-schedule-type'); // New
+
+            // Custom Schedule Elements
+            const customScheduleSection = document.getElementById('custom-schedule-section');
+            const customScheduleNameInput = document.getElementById('custom-schedule-name-input');
+            const customSchedulePeriodsList = document.getElementById('custom-schedule-periods-list');
+            const customStartTimeInput = document.getElementById('custom-start-time');
+            const customEndTimeInput = document.getElementById('custom-end-time');
+            const customCommentInput = document.getElementById('custom-comment-input');
+            const addCustomPeriodBtn = document.getElementById('add-custom-period-btn');
+            const saveCustomScheduleBtn = document.getElementById('save-custom-schedule-btn');
+
+            let currentCustomSchedulePeriods = []; // Temporary array for building custom schedule
+
+
+            // --- User Profile Data (simulated persistent storage) ---
+            let userProfileData = {
+                name: "John Smith",
+                position: "Deck Officer",
+                email: "john.smith@example.com",
+                contact: "+1 (555) 123-4567",
+                theme: "light",
+                userType: "", // Will store selected user type
+                scheduleType: "", // Will store selected schedule type
+                customSchedules: [] // New: to store custom schedules created by user
+            };
+
+            // Predefined schedules based on user type
+            const schedules = {
+                "Deck Officer": [
+                    { name: "8-on-16-off (Standard)", ranges: [
+                        { start: "00:00", end: "04:00", comment: "Morning Watch" },
+                        { start: "08:00", end: "12:00", comment: "Forenoon Watch" },
+                        { start: "16:00", end: "20:00", comment: "Evening Watch" }
+                    ]},
+                    { name: "6-on-6-off (Port)", ranges: [
+                        { start: "00:00", end: "06:00", comment: "Port Watch 1" },
+                        { start: "12:00", end: "18:00", comment: "Port Watch 2" }
+                    ]}
+                ],
+                "Engineer Officer": [
+                    { name: "Day Work (8-5)", ranges: [
+                        { start: "08:00", end: "17:00", comment: "Engine Room Day Work" }
+                    ]},
+                    { name: "3-on-9-off (Engine)", ranges: [
+                        { start: "00:00", end: "03:00", comment: "Engine Watch 1" },
+                        { start: "09:00", end: "12:00", comment: "Engine Watch 2" },
+                        { start: "18:00", end: "21:00", comment: "Engine Watch 3" }
+                    ]}
+                ],
+                "Rating": [
+                    { name: "General Duties (7-5)", ranges: [
+                        { start: "07:00", end: "12:00", comment: "Morning Duties" },
+                        { start: "13:00", end: "17:00", comment: "Afternoon Duties" }
+                    ]},
+                    { name: "Utility", ranges: [
+                        { start: "06:00", end: "10:00", comment: "Galley/Mess Duty" },
+                        { start: "14:00", end: "17:00", comment: "Maintenance Support" }
+                    ]}
+                ]
+            };
 
 
             // --- Sidebar Toggle Logic ---
@@ -937,6 +1049,34 @@
                 document.querySelectorAll('#rest-periods-list .edit-period-btn, #rest-periods-list .delete-period-btn').forEach(btn => {
                     btn.disabled = inputsDisabled;
                 });
+
+                // Handle future date message and disablement
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Normalize today to start of day
+                const selectedDay = new Date(selectedDate);
+                selectedDay.setHours(0, 0, 0, 0); // Normalize selectedDate to start of day
+
+                if (selectedDay > today) {
+                    if (futureDateMessage) futureDateMessage.classList.remove('hidden');
+                    if (addRestPeriodBtn) addRestPeriodBtn.disabled = true;
+                    if (saveRecordBtn) saveRecordBtn.classList.add('hidden');
+                    if (signAndSendBtn) signAndSendBtn.classList.add('hidden');
+                    if (editWithReasonBtn) editWithReasonBtn.classList.add('hidden'); // No editing future records
+                    if (startTimeInput) startTimeInput.disabled = true;
+                    if (endTimeInput) endTimeInput.disabled = true;
+                    if (commentInput) commentInput.disabled = true;
+                } else {
+                    if (futureDateMessage) futureDateMessage.classList.add('hidden');
+                    // Re-enable if it's today or past and not signed, as it might have been disabled by previous future date selection
+                    if (!isSigned) {
+                        if (startTimeInput) startTimeInput.disabled = false;
+                        if (endTimeInput) endTimeInput.disabled = false;
+                        if (commentInput) commentInput.disabled = false;
+                        if (addRestPeriodBtn) addRestPeriodBtn.disabled = false;
+                        if (saveRecordBtn) saveRecordBtn.classList.remove('hidden');
+                        if (signAndSendBtn) signAndSendBtn.classList.remove('hidden');
+                    }
+                }
             };
 
 
@@ -1027,26 +1167,57 @@
                 }
             };
 
-            // Function to load/simulate rest periods for the selected date
+            // Function to load rest periods for the selected date, applying schedule if applicable
             const loadRestPeriodsForSelectedDate = () => {
                 const record = dailyRecords[getDateString(selectedDate)];
                 restPeriods = record ? [...record.restPeriods] : []; // Load a copy
 
-                // Initial sample data for June 17, 2025, if no custom data exists for today
-                const todayString = getDateString(new Date());
-                const selectedDateString = getDateString(selectedDate);
+                const today = new Date();
+                const selectedDayStart = new Date(selectedDate);
+                selectedDayStart.setHours(0, 0, 0, 0);
+                const todayStart = new Date(today);
+                todayStart.setHours(0, 0, 0, 0);
 
-                if (selectedDateString === todayString && !dailyRecords[selectedDateString].isLoadedWithSample) {
-                    if (restPeriods.length === 0) { // Only add sample if truly empty
-                        restPeriods = [
-                            { start: '00:00', end: '06:00', comment: 'Routine night rest' },
-                            { start: '14:00', end: '18:30', comment: 'Afternoon break' },
-                            { start: '20:00', end: '23:30', comment: 'Evening rest before next shift' }
-                        ];
-                        dailyRecords[selectedDateString].restPeriods = restPeriods; // Save initial sample
+                // --- Apply Schedule Pre-population Logic ---
+                // Only apply schedule if not already populated for the day and it's today or a past day
+                if (userProfileData.scheduleType && restPeriods.length === 0 && selectedDayStart <= todayStart) {
+                    const selectedUserTypeSchedules = schedules[userProfileData.userType];
+                    let selectedSchedule = null;
+
+                    if (selectedUserTypeSchedules) {
+                        selectedSchedule = selectedUserTypeSchedules.find(s => s.name === userProfileData.scheduleType);
                     }
-                    dailyRecords[selectedDateString].isLoadedWithSample = true; // Mark as loaded to prevent re-adding
+                    
+                    // Check custom schedules if not found in predefined
+                    if (!selectedSchedule && userProfileData.customSchedules) {
+                         selectedSchedule = userProfileData.customSchedules.find(s => s.name === userProfileData.scheduleType);
+                    }
+
+                    if (selectedSchedule) {
+                        const newPeriods = [];
+                        selectedSchedule.ranges.forEach(range => {
+                            // Create Date objects for comparison on the selected day
+                            const periodStartDate = new Date(selectedDate);
+                            periodStartDate.setHours(parseInt(range.start.split(':')[0]), parseInt(range.start.split(':')[1]), 0, 0);
+
+                            const periodEndDate = new Date(selectedDate);
+                            periodEndDate.setHours(parseInt(range.end.split(':')[0]), parseInt(range.end.split(':')[1]), 0, 0);
+
+                            // Only pre-populate if the *entire* rest period has elapsed if it's today
+                            // Or if it's a past day, pre-populate all periods
+                            if (selectedDayStart.toDateString() === todayStart.toDateString()) { // If selected date is today
+                                if (periodEndDate <= today) { // If the period's end time has passed
+                                    newPeriods.push({ ...range }); // Add the range
+                                }
+                            } else if (selectedDayStart < todayStart) { // If selected date is in the past
+                                newPeriods.push({ ...range }); // Add all ranges
+                            }
+                        });
+                        restPeriods = newPeriods;
+                        dailyRecords[getDateString(selectedDate)].restPeriods = restPeriods; // Save the prepopulated periods
+                    }
                 }
+                // End Apply Schedule Logic
 
                 renderRestPeriods();
                 updateRecordHoursUIState(); // Update UI state after loading periods
@@ -1253,16 +1424,41 @@
                     const end = endTimeInput ? endTimeInput.value : '';
                     const comment = commentInput ? commentInput.value.trim() : ''; // Get comment
 
-                    if (start && end) {
-                        restPeriods.push({ start, end, comment }); // Store comment
-                        renderRestPeriods();
-                        updateTimeline();
-                        if (startTimeInput) startTimeInput.value = '00:00'; // Reset inputs
-                        if (endTimeInput) endTimeInput.value = '00:00';
-                        if (commentInput) commentInput.value = ''; // Clear comment input
-                    } else {
-                        console.error('Please enter both start and end times.');
+                    if (!start || !end) {
+                        showToast('Please enter both start and end times.', 2000);
+                        return;
                     }
+
+                    const today = new Date();
+                    const selectedDay = new Date(selectedDate);
+                    selectedDay.setHours(0, 0, 0, 0); // Normalize to start of day
+
+                    const periodStartDate = new Date(selectedDate);
+                    periodStartDate.setHours(parseInt(start.split(':')[0]), parseInt(start.split(':')[1]), 0, 0);
+
+                    const periodEndDate = new Date(selectedDate);
+                    periodEndDate.setHours(parseInt(end.split(':')[0]), parseInt(end.split(':')[1]), 0, 0);
+
+                    // Prevent adding periods for future dates
+                    if (selectedDay > today) {
+                        showToast('Cannot add rest periods for future dates.', 3000);
+                        return;
+                    }
+                    // Prevent adding periods for future times on the current day
+                    if (selectedDay.toDateString() === today.toDateString()) {
+                        if (periodStartDate > today || periodEndDate > today) {
+                            showToast('Cannot add rest periods for future times on the current day.', 3000);
+                            return;
+                        }
+                    }
+
+                    restPeriods.push({ start, end, comment }); // Store comment
+                    renderRestPeriods();
+                    updateTimeline();
+                    if (startTimeInput) startTimeInput.value = '00:00'; // Reset inputs
+                    if (endTimeInput) endTimeInput.value = '00:00';
+                    if (commentInput) commentInput.value = ''; // Clear comment input
+                    updateRecordHoursUIState(); // Re-evaluate UI state after adding
                 });
             }
 
@@ -1693,13 +1889,22 @@
 
             // --- Profile Page Logic ---
             const profileFields = [
-                profileNameInput, profilePositionInput, profileEmailInput, profileContactInput, profileThemeSelect
+                profileNameInput, profilePositionInput, profileEmailInput, profileContactInput, profileThemeSelect, profileUserTypeSelect, profileScheduleTypeSelect
             ];
 
             const setProfileEditMode = (isEditing) => {
                 profileFields.forEach(field => {
                     if (field) field.disabled = !isEditing;
                 });
+
+                // Custom schedule inputs are enabled only if editing and "Custom Schedule" is selected
+                const isCustomScheduleSelected = profileScheduleTypeSelect && profileScheduleTypeSelect.value === 'Custom Schedule';
+                if (customScheduleNameInput) customScheduleNameInput.disabled = !isEditing || !isCustomScheduleSelected;
+                if (addCustomPeriodBtn) addCustomPeriodBtn.disabled = !isEditing || !isCustomScheduleSelected;
+                if (saveCustomScheduleBtn) saveCustomScheduleBtn.disabled = !isEditing || !isCustomScheduleSelected;
+                if (customStartTimeInput) customStartTimeInput.disabled = !isEditing || !isCustomScheduleSelected;
+                if (customEndTimeInput) customEndTimeInput.disabled = !isEditing || !isCustomScheduleSelected;
+                if (customCommentInput) customCommentInput.disabled = !isEditing || !isCustomScheduleSelected;
 
                 if (isEditing) {
                     if (profileEditSaveBtn) {
@@ -1708,6 +1913,7 @@
                         profileEditSaveBtn.classList.add('btn-success');
                     }
                     if (profileCancelBtn) profileCancelBtn.classList.remove('hidden');
+                    if (customScheduleSection) customScheduleSection.classList.toggle('hidden', !isCustomScheduleSelected);
                 } else {
                     if (profileEditSaveBtn) {
                         profileEditSaveBtn.textContent = 'Edit Profile';
@@ -1715,8 +1921,173 @@
                         profileEditSaveBtn.classList.add('btn-primary');
                     }
                     if (profileCancelBtn) profileCancelBtn.classList.add('hidden');
+                    if (customScheduleSection) customScheduleSection.classList.add('hidden'); // Hide custom section when not editing
                 }
             };
+
+            // Function to populate schedule types dropdown based on user type
+            const populateScheduleTypes = () => {
+                if (!profileScheduleTypeSelect) return;
+                profileScheduleTypeSelect.innerHTML = '<option value="">Select Schedule</option>'; // Clear existing options
+
+                const selectedUserType = profileUserTypeSelect ? profileUserTypeSelect.value : '';
+                if (selectedUserType && schedules[selectedUserType]) {
+                    schedules[selectedUserType].forEach(schedule => {
+                        const option = document.createElement('option');
+                        option.value = schedule.name;
+                        option.textContent = schedule.name;
+                        profileScheduleTypeSelect.appendChild(option);
+                    });
+                }
+                // Add custom schedules
+                if (userProfileData.customSchedules && userProfileData.customSchedules.length > 0) {
+                    const customGroup = document.createElement('optgroup');
+                    customGroup.label = "My Custom Schedules";
+                    userProfileData.customSchedules.forEach(customSchedule => {
+                        const option = document.createElement('option');
+                        option.value = customSchedule.name;
+                        option.textContent = customSchedule.name;
+                        customGroup.appendChild(option);
+                    });
+                    profileScheduleTypeSelect.appendChild(customGroup);
+                }
+                profileScheduleTypeSelect.innerHTML += '<option value="Custom Schedule">Custom Schedule</option>'; // Always add Custom option
+
+                // Pre-select saved schedule if it exists
+                if (userProfileData.scheduleType) {
+                    profileScheduleTypeSelect.value = userProfileData.scheduleType;
+                } else {
+                    profileScheduleTypeSelect.value = ""; // Ensure default "Select Schedule" if none saved
+                }
+                
+                // Show/hide custom schedule section based on selection
+                if (profileScheduleTypeSelect.value === 'Custom Schedule' && !profileScheduleTypeSelect.disabled) { // Only show if enabled for editing
+                    customScheduleSection.classList.remove('hidden');
+                    // Populate custom schedule name and periods if editing an existing custom schedule
+                    const existingCustom = userProfileData.customSchedules.find(s => s.name === customScheduleNameInput.value);
+                    if (existingCustom) {
+                        currentCustomSchedulePeriods = [...existingCustom.ranges];
+                    } else {
+                        currentCustomSchedulePeriods = [];
+                    }
+                    renderCustomSchedulePeriods();
+                } else {
+                    customScheduleSection.classList.add('hidden');
+                }
+                setProfileEditMode(profileEditSaveBtn.textContent === 'Save Changes'); // Re-evaluate button disablement
+            };
+
+            // Function to render custom schedule periods in the definition area
+            const renderCustomSchedulePeriods = () => {
+                if (!customSchedulePeriodsList) return;
+                customSchedulePeriodsList.innerHTML = '';
+                currentCustomSchedulePeriods.forEach((period, index) => {
+                    const periodDiv = document.createElement('div');
+                    periodDiv.classList.add('flex', 'justify-between', 'items-center', 'p-2', 'bg-base-100', 'rounded-lg', 'shadow-sm');
+                    periodDiv.innerHTML = `
+                        <div>
+                            <div class="font-medium text-base-content">${period.start} - ${period.end}</div>
+                            ${period.comment ? `<div class="text-xs text-base-content-secondary italic">Comment: ${period.comment}</div>` : ''}
+                        </div>
+                        <button class="btn btn-ghost btn-xs text-error delete-custom-period-btn" data-index="${index}">Delete</button>
+                    `;
+                    customSchedulePeriodsList.appendChild(periodDiv);
+                });
+
+                document.querySelectorAll('.delete-custom-period-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = parseInt(e.currentTarget.dataset.index);
+                        currentCustomSchedulePeriods.splice(index, 1);
+                        renderCustomSchedulePeriods();
+                    });
+                });
+            };
+
+            // Event listener for user type change
+            if (profileUserTypeSelect) {
+                profileUserTypeSelect.addEventListener('change', () => {
+                    populateScheduleTypes();
+                    // Disable schedule type if no user type selected
+                    if (profileScheduleTypeSelect) {
+                        profileScheduleTypeSelect.disabled = !profileUserTypeSelect.value;
+                    }
+                });
+            }
+
+            // Event listener for schedule type change
+            if (profileScheduleTypeSelect) {
+                profileScheduleTypeSelect.addEventListener('change', () => {
+                    const selectedValue = profileScheduleTypeSelect.value;
+                    if (selectedValue === 'Custom Schedule') {
+                        customScheduleSection.classList.remove('hidden');
+                        customScheduleNameInput.value = ''; // Clear custom name for new custom schedule
+                        currentCustomSchedulePeriods = []; // Clear periods for new custom schedule
+                        renderCustomSchedulePeriods();
+                    } else {
+                        customScheduleSection.classList.add('hidden');
+                    }
+                    // Re-evaluate enablement of custom schedule inputs
+                    setProfileEditMode(profileEditSaveBtn.textContent === 'Save Changes');
+                });
+            }
+
+            // Add period to custom schedule
+            if (addCustomPeriodBtn) {
+                addCustomPeriodBtn.addEventListener('click', () => {
+                    const start = customStartTimeInput.value;
+                    const end = customEndTimeInput.value;
+                    const comment = customCommentInput.value.trim();
+
+                    if (start && end) {
+                        currentCustomSchedulePeriods.push({ start, end, comment });
+                        renderCustomSchedulePeriods();
+                        customStartTimeInput.value = '';
+                        customEndTimeInput.value = '';
+                        customCommentInput.value = '';
+                    } else {
+                        showToast('Please enter start and end times for the custom period.', 2000);
+                    }
+                });
+            }
+
+            // Save custom schedule
+            if (saveCustomScheduleBtn) {
+                saveCustomScheduleBtn.addEventListener('click', () => {
+                    const customName = customScheduleNameInput.value.trim();
+                    if (!customName) {
+                        showToast('Please enter a name for your custom schedule.', 2000);
+                        return;
+                    }
+                    if (currentCustomSchedulePeriods.length === 0) {
+                        showToast('Please add at least one rest period to your custom schedule.', 2000);
+                        return;
+                    }
+
+                    const newCustomSchedule = {
+                        name: customName,
+                        ranges: [...currentCustomSchedulePeriods]
+                    };
+
+                    // Check if schedule name already exists (predefined or custom)
+                    const nameExists = Object.values(schedules).flat().some(s => s.name === customName) ||
+                                       userProfileData.customSchedules.some(s => s.name === customName);
+                    if (nameExists) {
+                        showToast('A schedule with this name already exists. Please choose a different name.', 3000);
+                        return;
+                    }
+
+
+                    userProfileData.customSchedules.push(newCustomSchedule);
+                    userProfileData.scheduleType = newCustomSchedule.name; // Select the newly created custom schedule
+                    populateScheduleTypes(); // Re-populate to include the new custom schedule
+                    showToast('Custom schedule saved and selected!', 3000);
+                    setProfileEditMode(false); // Exit edit mode after saving
+                });
+            }
+
+            // Initial population of user types (assuming they are static from HTML)
+            // Initial population of schedule types based on default/saved user type
+            populateScheduleTypes();
 
             // Initial profile state
             setProfileEditMode(false);
@@ -1726,16 +2097,21 @@
                     if (profileEditSaveBtn.textContent === 'Edit Profile') {
                         setProfileEditMode(true);
                     } else { // Save Changes
+                        // Update userProfileData with current input values
+                        userProfileData.name = profileNameInput ? profileNameInput.value : userProfileData.name;
+                        userProfileData.position = profilePositionInput ? profilePositionInput.value : userProfileData.position;
+                        userProfileData.email = profileEmailInput ? profileEmailInput.value : userProfileData.email;
+                        userProfileData.contact = profileContactInput ? profileContactInput.value : userProfileData.contact;
+                        userProfileData.theme = profileThemeSelect ? profileThemeSelect.value : userProfileData.theme;
+                        userProfileData.userType = profileUserTypeSelect ? profileUserTypeSelect.value : userProfileData.userType;
+                        userProfileData.scheduleType = profileScheduleTypeSelect ? profileScheduleTypeSelect.value : userProfileData.scheduleType;
+
                         // In a real app, save data to backend/storage
-                        showToast('Profile changes saved!');
-                        console.log('Profile saved:', {
-                            name: profileNameInput.value,
-                            position: profilePositionInput.value,
-                            email: profileEmailInput.value,
-                            contact: profileContactInput.value,
-                            theme: profileThemeSelect.value
-                        });
+                        showToast('Profile changes saved!', 3000);
+                        console.log('Profile saved:', userProfileData);
                         setProfileEditMode(false);
+                        // Re-populate schedules based on new user type if it changed
+                        populateScheduleTypes();
                     }
                 });
             }
@@ -1743,22 +2119,30 @@
             if (profileCancelBtn) {
                 profileCancelBtn.addEventListener('click', () => {
                     // Revert changes (simulated - in real app, reload original data)
-                    if (profileNameInput) profileNameInput.value = "John Smith";
-                    if (profilePositionInput) profilePositionInput.value = "Deck Officer";
-                    if (profileEmailInput) profileEmailInput.value = "john.smith@example.com";
-                    if (profileContactInput) profileContactInput.value = "+1 (555) 123-4567";
-                    if (profileThemeSelect) profileThemeSelect.value = "light";
-                    showToast('Profile changes cancelled.');
+                    if (profileNameInput) profileNameInput.value = userProfileData.name;
+                    if (profilePositionInput) profilePositionInput.value = userProfileData.position;
+                    if (profileEmailInput) profileEmailInput.value = userProfileData.email;
+                    if (profileContactInput) profileContactInput.value = userProfileData.contact;
+                    if (profileThemeSelect) profileThemeSelect.value = userProfileData.theme;
+                    if (profileUserTypeSelect) profileUserTypeSelect.value = userProfileData.userType;
+                    populateScheduleTypes(); // Re-populate schedules correctly based on reverted user type
+                    if (profileScheduleTypeSelect) profileScheduleTypeSelect.value = userProfileData.scheduleType;
+                    // Hide custom schedule section if it was visible
+                    if (customScheduleSection) customScheduleSection.classList.add('hidden');
+
+                    showToast('Profile changes cancelled.', 2000);
                     setProfileEditMode(false);
                 });
             }
 
-            // Mock profile data
-            if (profileNameInput) profileNameInput.value = "John Smith";
-            if (profilePositionInput) profilePositionInput.value = "Deck Officer";
-            if (profileEmailInput) profileEmailInput.value = "john.smith@example.com";
-            if (profileContactInput) profileContactInput.value = "+1 (555) 123-4567";
-            if (profileThemeSelect) profileThemeSelect.value = "light";
+            // Populate profile fields with initial userProfileData
+            if (profileNameInput) profileNameInput.value = userProfileData.name;
+            if (profilePositionInput) profilePositionInput.value = userProfileData.position;
+            if (profileEmailInput) profileEmailInput.value = userProfileData.email;
+            if (profileContactInput) profileContactInput.value = userProfileData.contact;
+            if (profileThemeSelect) profileThemeSelect.value = userProfileData.theme;
+            if (profileUserTypeSelect) profileUserTypeSelect.value = userProfileData.userType;
+            // Schedule type dropdown populated by populateScheduleTypes on load
         });
     </script>
 </body>
