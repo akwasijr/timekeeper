@@ -13,6 +13,11 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --color-primary-brand-blue: #004882; /* Updated primary brand color */
+            --color-secondary-brand-orange: #D97944; /* Updated secondary brand color */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6; /* Light gray background */
@@ -41,15 +46,15 @@
 
         /* Primary Button Style - Filled with color, white text */
         .btn-primary {
-            background-color: #1d4ed8; /* A darker blue for primary buttons */
-            border-color: #1d4ed8;
+            background-color: var(--color-primary-brand-blue);
+            border-color: var(--color-primary-brand-blue);
             color: white;
             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease-in-out;
         }
 
         .btn-primary:hover {
-            background-color: #1e40af; /* Even darker on hover */
-            border-color: #1e40af;
+            background-color: #003a6a; /* Slightly darker primary blue on hover */
+            border-color: #003a6a;
         }
          .btn-primary:active {
             transform: translateY(1px); /* Subtle press effect */
@@ -58,15 +63,15 @@
         /* Secondary Button Style - Outlined, white background, colored text matching border */
         .btn-secondary-outline {
             background-color: white;
-            border: 1px solid #1d4ed8; /* Primary blue for outline */
-            color: #1d4ed8; /* Primary blue for text */
+            border: 1px solid var(--color-primary-brand-blue); /* Primary blue for outline */
+            color: var(--color-primary-brand-blue); /* Primary blue for text */
             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.1s ease-in-out;
         }
 
         .btn-secondary-outline:hover {
             background-color: #eff6ff; /* Light blue on hover */
-            border-color: #1e40af;
-            color: #1e40af;
+            border-color: #003a6a;
+            color: #003a6a;
         }
         .btn-secondary-outline:active {
             transform: translateY(1px); /* Subtle press effect */
@@ -194,9 +199,26 @@
         <!-- Sidebar -->
         <div id="sidebar" class="bg-base-100 shadow-lg flex flex-col justify-between py-6 px-4 transition-all duration-300 ease-in-out lg:w-64 flex-shrink-0 sidebar-visible">
             <div>
-                <div class="flex justify-between items-center text-xl font-bold text-primary mb-10 pl-2">
+                <div class="flex justify-between items-center text-xl font-bold text-primary-brand-blue mb-10 pl-2">
                     <div class="flex items-center">
-                        <i class="fas fa-ship mr-2"></i>Rest Tracker
+                        <!-- Company Logo SVG -->
+                        <svg class="w-8 h-8 mr-2" xmlns="http://www.w3.org/2000/svg" width="2500" height="2500" viewBox="0 0 192.756 192.756">
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#fff" d="M0 0h192.756v192.756H0V0z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613" d="M51.292 128.717l27.074 26.785h69.997v-12.086l-28.394-26.785-68.677 12.086z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" d="M51.292 128.717l27.075 26.785h69.996v-12.086l-28.394-26.785-68.677 12.086z"/>
+                            <path fill="none" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613" d="M51.292 128.717l27.074 26.785h69.997v-12.086l-28.394-26.785-68.677 12.086"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M119.969 116.631V76.452l23.443 20.579h11.225V41.173l-23.442-21.885-40.612 7.186 1.321 95.057 28.065-4.9z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" d="M119.969 116.631V76.452l23.443 20.579h11.225V41.173l-23.442-21.885-40.612 7.186 1.321 95.057 28.065-4.9z"/>
+                            <path fill="none" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613" d="M119.969 116.631V76.452l23.443 20.579h11.225V41.174l-23.442-21.886-40.612 7.186 1.32 95.057 28.066-4.9"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M43.698 74.166L66.15 97.357h15.188L80.017 22.88H67.471L43.698 74.166z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" d="M43.698 74.166L66.15 97.357h15.188L80.017 22.88H67.471L43.698 74.166z"/>
+                            <path fill="none" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613" d="M43.698 74.166L66.15 97.357h15.188L80.017 22.88H67.471L43.698 74.166"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#d97944" stroke="#d97944" stroke-width="1.851" stroke-miterlimit="2.613" d="M43.368 18.961l87.827.327v54.551h-12.877l-13.207-46.058H94.545v88.524h25.424v12.412H49.971v-12.412h29.386V27.781H67.471L55.915 73.839H43.368V18.961z"/>
+                            <path d="M99.828 139.824c0-17.641-26.414-17.641-26.414 0 0 17.313 26.414 17.313 26.414 0z" fill-rule="evenodd" clip-rule="evenodd" fill="#d97944" stroke="#d97944" stroke-width="1.851" stroke-miterlimit="2.613"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" d="M82.659 155.83l21.46 17.965 17.17-20.578-38.63 2.613z"/>
+                            <path d="M90.913 139.824c0-5.555-8.584-5.555-8.584 0 0 5.553 8.584 5.553 8.584 0z" fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613"/>
+                        </svg>
+                        Rest Tracker
                     </div>
                 </div>
                 <ul class="menu p-0 text-base-content">
@@ -286,7 +308,7 @@
                                 <div class="text-2xl lg:text-3xl font-bold text-custom-green">15</div>
                                 <div class="text-sm text-base-content-secondary">Compliant Days</div>
                             </div>
-                            <div class="bg-custom-red p-4 rounded-lg">
+                            <div class="bg-custom-red p-4 rounded-lg cursor-pointer" id="violations-kpi-card"> <!-- Made clickable -->
                                 <div class="text-2xl lg:text-3xl font-bold text-custom-red">2</div>
                                 <div class="text-sm text-base-content-secondary">Violations</div>
                             </div>
@@ -727,6 +749,7 @@
             const sidebar = document.getElementById('sidebar');
             const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn'); // Hamburger/Close in header
             const quickNavIcons = document.getElementById('quick-nav-icons');
+            const violationsKpiCard = document.getElementById('violations-kpi-card'); // Get the violations KPI div
 
             // Record Hours Page Elements
             const calendarGrid = document.getElementById('calendar-grid');
@@ -900,7 +923,12 @@
 
             // Handle resize: force sidebar open on large screens, and update button state
             window.addEventListener('resize', () => {
+                const wasSidebarOpen = isSidebarOpen; // Capture current state before calculation
                 isSidebarOpen = window.innerWidth >= 1024; // Directly set state based on current width
+                // If it was open (from large screen resize), set it to false for small screen when resized down
+                if (window.innerWidth < 1024 && wasSidebarOpen && sidebar.classList.contains('sidebar-visible')) {
+                    isSidebarOpen = false; // Force close it on resize down if it was open due to large screen
+                }
                 updateSidebarVisibility(); // Update sidebar and quickNavIcons visibility
             });
 
@@ -1526,6 +1554,16 @@
                 });
             }
 
+            // Violations KPI button functionality
+            if (violationsKpiCard) { // Changed to violationsKpiCard
+                violationsKpiCard.addEventListener('click', () => {
+                    setActivePage('my-records-page');
+                    // In a real app, you'd then filter the records table to show only violations.
+                    // For this example, it just navigates to the page.
+                    showToast('Navigating to My Records to view violations.', 3000);
+                });
+            }
+
 
             const acknowledgeMayRecordBtn = document.getElementById('acknowledge-may-record-btn');
             if (acknowledgeMayRecordBtn) {
@@ -1966,8 +2004,10 @@
                     // Populate custom schedule name and periods if editing an existing custom schedule
                     const existingCustom = userProfileData.customSchedules.find(s => s.name === customScheduleNameInput.value);
                     if (existingCustom) {
+                        customScheduleNameInput.value = existingCustom.name;
                         currentCustomSchedulePeriods = [...existingCustom.ranges];
                     } else {
+                        customScheduleNameInput.value = '';
                         currentCustomSchedulePeriods = [];
                     }
                     renderCustomSchedulePeriods();
