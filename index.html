@@ -241,9 +241,9 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col p-8 overflow-y-auto">
+        <div class="flex-1 flex flex-col mx-0 px-0 py-4 sm:p-8 overflow-y-auto"> <!-- Reduced padding for mobile -->
             <!-- Top Nav/Header -->
-            <div class="flex justify-between items-center py-4 border-b border-base-200 mb-6 sticky top-0 bg-white z-10 rounded-b-lg shadow-sm px-6">
+            <div class="flex justify-between items-center py-4 border-b border-base-200 mb-6 sticky top-0 bg-white z-10 rounded-b-lg shadow-sm px-0 sm:px-6"> <!-- Reduced horizontal padding for mobile -->
                 <div class="flex items-center h-full">
                     <!-- Hamburger/Close button to open/close sidebar -->
                     <button id="sidebar-toggle-btn" class="btn btn-ghost btn-circle lg:hidden mr-4">
@@ -270,10 +270,7 @@
 
             <!-- Dashboard Page Content -->
             <div id="dashboard-page" class="page-content active">
-                <!-- Removed redundant h2: <h2 class="text-xl font-semibold text-base-content mb-6">Welcome back, John Smith!</h2> -->
-
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <!-- June 2025 Record Status -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6 col-span-full lg:col-span-2">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-base-content">June 2025 Record Status</h3>
@@ -282,22 +279,21 @@
                         <p class="text-base-content-secondary mb-6 text-sm">Track your monthly compliance progress.</p>
                         <div class="grid grid-cols-3 gap-4 text-center mb-8">
                             <div class="bg-custom-blue p-4 rounded-lg">
-                                <div class="text-3xl font-bold text-custom-blue">17</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue">17</div>
                                 <div class="text-sm text-base-content-secondary">Days Recorded</div>
                             </div>
                             <div class="bg-custom-green p-4 rounded-lg">
-                                <div class="text-3xl font-bold text-custom-green">15</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-green">15</div>
                                 <div class="text-sm text-base-content-secondary">Compliant Days</div>
                             </div>
                             <div class="bg-custom-red p-4 rounded-lg">
-                                <div class="text-3xl font-bold text-custom-red">2</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-red">2</div>
                                 <div class="text-sm text-base-content-secondary">Violations</div>
                             </div>
                         </div>
                         <button class="btn btn-primary w-full rounded-lg" id="continue-recording-btn">Continue Recording</button>
                     </div>
 
-                    <!-- Today's Summary Card -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6">
                         <h3 class="text-lg font-semibold text-base-content mb-4">Today: June 17, 2025</h3>
                         <div class="space-y-3 mb-6">
@@ -324,7 +320,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Pending Actions -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6">
                         <h3 class="text-lg font-semibold text-base-content mb-4">Pending Actions</h3>
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
@@ -344,7 +339,6 @@
                         </div>
                     </div>
 
-                    <!-- Recent Activity -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6">
                         <h3 class="text-lg font-semibold text-base-content mb-4">Recent Activity</h3>
                         <ul class="space-y-4">
@@ -377,9 +371,8 @@
                 </div>
             </div>
 
-            <!-- My Records Page Content -->
             <div id="my-records-page" class="page-content hidden">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex justify-between items-center mb-6 px-4"> <!-- Added px-4 for internal content -->
                     <h2 class="text-xl font-semibold text-base-content">My Records</h2>
                     <div class="flex space-x-2">
                         <div class="dropdown">
@@ -407,7 +400,6 @@
 
                 <div class="overflow-x-auto bg-base-100 rounded-lg shadow-md">
                     <table class="table w-full">
-                        <!-- head -->
                         <thead>
                             <tr>
                                 <th>PERIOD</th>
@@ -420,7 +412,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Row 1 -->
                             <tr>
                                 <td>
                                     <div class="font-bold">June 2025</div>
@@ -436,7 +427,6 @@
                                     <i class="fas fa-download text-base-content-secondary cursor-pointer download-record-btn"></i>
                                 </td>
                             </tr>
-                            <!-- Row 2 -->
                             <tr>
                                 <td>
                                     <div class="font-bold">May 2025</div>
@@ -457,12 +447,11 @@
                 </div>
             </div>
 
-            <!-- Record Details Page Content (Now a top-level page-content) -->
             <div id="record-details-page" class="page-content hidden">
-                <button class="btn btn-ghost btn-sm mb-4" id="back-to-records-list"><i class="fas fa-arrow-left mr-2"></i>Back to Records List</button>
-                <h2 class="text-xl font-semibold text-base-content mb-6" id="record-details-title">Record Details</h2>
+                <button class="btn btn-ghost btn-sm mb-4 ml-4 sm:ml-0" id="back-to-records-list"><i class="fas fa-arrow-left mr-2"></i>Back to Records List</button> <!-- Adjusted margin -->
+                <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Record Details</h2> <!-- Adjusted padding -->
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 px-4 sm:px-0"> <!-- Adjusted padding -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6 col-span-full">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-base-content" id="record-details-status-title">June 2025 Rest Hours Record</h3>
@@ -471,20 +460,19 @@
                         <p class="text-base-content-secondary mb-6 text-sm">Complete monthly record with all signatures.</p>
                         <div class="grid grid-cols-4 gap-4 text-center mb-8">
                             <div class="bg-custom-blue p-4 rounded-lg">
-                                <div class="text-3xl font-bold text-custom-blue" id="record-days-recorded">30</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue" id="record-days-recorded">30</div>
                                 <div class="text-sm text-base-content-secondary">Days Recorded</div>
                             </div>
                             <div class="bg-custom-green p-4 rounded-lg">
-                                <div class="text-3xl font-bold text-custom-green">100 %</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-green">100 %</div>
                                 <div class="text-sm text-base-content-secondary">Compliance Rate</div>
                             </div>
                             <div class="bg-custom-blue p-4 rounded-lg">
-                                <div class="text-3xl font-bold text-custom-blue" id="record-total-rest">360</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue" id="record-total-rest">360</div>
                                 <div class="text-sm text-base-content-secondary">Total Rest Hours</div>
                             </div>
                             <div class="bg-custom-blue p-4 rounded-lg">
-                                <div class="text-3xl font-bold text-custom-blue" id="record-total-work"></div> <!-- New element for total work hours -->
-                                <div class="text-sm text-base-content-secondary">Total Work Hours</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue" id="record-total-work"></div> <div class="text-sm text-base-content-secondary">Total Work Hours</div>
                             </div>
                         </div>
 
@@ -509,8 +497,8 @@
                     </div>
                 </div>
 
-                <h3 class="text-lg font-semibold text-base-content mb-4">Daily Rest Hours Breakdown</h3>
-                <p class="text-base-content-secondary mb-4 text-sm">Detailed view of each day's rest periods and compliance status</p>
+                <h3 class="text-lg font-semibold text-base-content mb-4 px-4 sm:px-0">Daily Rest Hours Breakdown</h3> <!-- Adjusted padding -->
+                <p class="text-base-content-secondary mb-4 text-sm px-4 sm:px-0">Detailed view of each day's rest periods and compliance status</p> <!-- Adjusted padding -->
 
                 <div class="overflow-x-auto bg-base-100 rounded-lg shadow-md">
                     <table class="table w-full">
@@ -525,19 +513,16 @@
                             </tr>
                         </thead>
                         <tbody id="daily-rest-breakdown-tbody-details">
-                            <!-- Dynamic content will be inserted here -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
 
 
-            <!-- Record Hours Page Content -->
             <div id="record-hours-page" class="page-content hidden">
-                <h2 class="text-xl font-semibold text-base-content mb-6">Record Hours</h2>
+                <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Record Hours</h2> <!-- Adjusted padding -->
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Left Section: Calendar -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 sm:px-0"> <!-- Adjusted padding -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6">
                         <div class="flex justify-between items-center mb-6">
                             <button class="btn btn-ghost btn-sm rounded-lg" id="prev-month-btn"><i class="fas fa-chevron-left"></i></button>
@@ -554,11 +539,9 @@
                             <div class="text-xs font-semibold text-base-content-secondary">Fri</div>
                             <div class="text-xs font-semibold text-base-content-secondary">Sat</div>
 
-                            <!-- Calendar days will be dynamically generated here -->
-                        </div>
+                            </div>
                     </div>
 
-                    <!-- Right Section: Edit Hours & Rest Periods List -->
                     <div class="card bg-base-100 shadow-md rounded-lg p-6">
                         <h3 class="text-lg font-semibold text-base-content mb-4" id="editing-hours-title">Editing Hours for June 17, 2025</h3>
                         <p class="text-sm text-base-content-secondary mb-4">Add rest periods for the selected day</p>
@@ -576,8 +559,7 @@
 
                         <h4 class="text-sm font-semibold text-base-content-secondary mb-2">Added Rest Periods</h4>
                         <div class="space-y-3 mb-6" id="rest-periods-list">
-                            <!-- Rest periods will be dynamically added here -->
-                        </div>
+                            </div>
                         <div class="flex justify-between space-x-4">
                             <button class="btn btn-primary w-1/2 rounded-lg" id="save-record-btn"><i class="fas fa-save mr-2"></i>Save Record</button>
                             <button class="btn btn-success w-1/2 rounded-lg" id="sign-and-send-btn"><i class="fas fa-paper-plane mr-2"></i>Sign & Send</button>
@@ -586,12 +568,10 @@
                     </div>
                 </div>
 
-                <!-- 24-Hour Timeline Section - Now full width below other cards -->
-                <div class="card bg-base-100 shadow-md rounded-lg p-6 mt-6">
+                <div class="card bg-base-100 shadow-md rounded-lg p-6 mt-6 px-4 sm:px-6"> <!-- Adjusted padding -->
                     <h4 class="text-lg font-semibold text-base-content-secondary mb-2">24-Hour Timeline</h4>
                     <div class="w-full bg-gray-200 rounded-lg h-10 relative overflow-hidden" id="timeline-chart">
-                        <!-- Timeline segments will be dynamically generated here -->
-                    </div>
+                        </div>
                     <div class="flex justify-between text-xs text-base-content-secondary mt-2">
                         <span>00:00</span><span>03:00</span><span>06:00</span><span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span><span>24:00</span>
                     </div>
@@ -612,10 +592,9 @@
                 </div>
             </div>
 
-            <!-- Profile Page Content (Placeholder) -->
             <div id="profile-page" class="page-content hidden">
-                <h2 class="text-xl font-semibold text-base-content mb-6">Profile Settings</h2>
-                <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Profile Settings</h2> <!-- Adjusted padding -->
+                <div class="card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6"> <!-- Adjusted padding -->
                     <div class="flex flex-col md:flex-row md:space-x-8">
                         <div class="flex-1 space-y-4">
                             <div>
@@ -658,10 +637,8 @@
         </div>
     </div>
 
-    <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- Edit Reason Modal -->
     <dialog id="edit-reason-modal" class="modal">
         <div class="modal-box">
             <h3 class="font-bold text-lg">Reason for Editing</h3>
@@ -811,20 +788,7 @@
 
             // Handle resize: force sidebar open on large screens, and update button state
             window.addEventListener('resize', () => {
-                const wasSidebarOpen = isSidebarOpen; // Capture current state before calculation
-                if (window.innerWidth >= 1024) {
-                    isSidebarOpen = true; // Force open
-                    // Hide the toggle button on large screens
-                    if (sidebarToggleBtn) sidebarToggleBtn.classList.add('hidden');
-                } else {
-                    // If it was open (from large screen resize), set it to closed for small screen
-                    // If it was already explicitly closed on small, keep it closed.
-                    if (wasSidebarOpen) {
-                        isSidebarOpen = false;
-                    }
-                    // Ensure the toggle button is visible on small screens
-                    if (sidebarToggleBtn) sidebarToggleBtn.classList.remove('hidden');
-                }
+                isSidebarOpen = window.innerWidth >= 1024; // Directly set state based on current width
                 updateSidebarVisibility(); // Update sidebar and quickNavIcons visibility
             });
 
