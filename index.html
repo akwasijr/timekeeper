@@ -619,8 +619,14 @@
             <div id="profile-page" class="page-content hidden">
                 <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Profile Settings</h2> <!-- Adjusted padding -->
                 
-                <!-- Personal Settings Card -->
-                <div class="card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6 mb-6">
+                <!-- Tabs for Profile Settings -->
+                <div role="tablist" class="tabs tabs-boxed tabs-md mb-6 mx-4 sm:mx-0">
+                    <a role="tab" class="tab tab-active" data-tab-target="personal-settings-tab">Personal Settings</a>
+                    <a role="tab" class="tab" data-tab-target="schedule-settings-tab">Schedule Settings</a>
+                </div>
+
+                <!-- Personal Settings Tab Content -->
+                <div id="personal-settings-tab" class="tab-content-panel active-tab-content card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6 mb-6">
                     <h3 class="text-lg font-semibold text-base-content mb-4">Personal Settings</h3>
                     <div class="flex flex-col md:flex-row md:space-x-8">
                         <div class="flex-1 space-y-4">
@@ -657,8 +663,8 @@
                     </div>
                 </div>
 
-                <!-- User & Schedule Settings Card -->
-                <div class="card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6 mb-6">
+                <!-- Schedule Settings Tab Content -->
+                <div id="schedule-settings-tab" class="tab-content-panel hidden card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6 mb-6">
                     <h3 class="text-lg font-semibold text-base-content mb-4">User & Schedule Settings</h3>
                     <div class="space-y-4">
                         <div>
@@ -696,6 +702,27 @@
                             <input type="text" id="custom-comment-input" class="input input-bordered w-full rounded-lg" placeholder="Comment (Optional)" disabled>
                             <button class="btn btn-primary btn-sm w-full rounded-lg" id="add-custom-period-btn" disabled><i class="fas fa-plus mr-2"></i>Add Period to Custom</button>
                             <button class="btn btn-success w-full rounded-lg" id="save-custom-schedule-btn" disabled><i class="fas fa-save mr-2"></i>Save Custom Schedule</button>
+                        </div>
+
+                        <!-- 24-Hour Schedule Timeline (Visual) -->
+                        <div class="mt-6">
+                            <h4 class="text-md font-semibold text-base-content-secondary mb-2">24-Hour Schedule Preview</h4>
+                            <div class="w-full bg-gray-200 rounded-lg h-10 relative overflow-hidden" id="profile-schedule-timeline">
+                                <!-- Timeline segments will be dynamically generated here -->
+                            </div>
+                            <div class="flex justify-between text-xs text-base-content-secondary mt-2">
+                                <span>00:00</span><span>03:00</span><span>06:00</span><span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span><span>24:00</span>
+                            </div>
+                            <div class="flex items-center space-x-4 mt-4">
+                                <div class="flex items-center">
+                                    <span class="w-4 h-4 bg-green-500 rounded-full mr-2"></span>
+                                    <span class="text-sm text-base-content">Rest Period</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-4 h-4 bg-gray-400 rounded-full mr-2"></span>
+                                    <span class="text-sm text-base-content">Work Period</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -810,6 +837,12 @@
             const saveCustomScheduleBtn = document.getElementById('save-custom-schedule-btn');
 
             let currentCustomSchedulePeriods = []; // Temporary array for building custom schedule
+
+            // Profile Tabs
+            const profileTabs = document.querySelectorAll('.tabs .tab');
+            const personalSettingsTabContent = document.getElementById('personal-settings-tab');
+            const scheduleSettingsTabContent = document.getElementById('schedule-settings-tab');
+            const profileScheduleTimeline = document.getElementById('profile-schedule-timeline'); // New timeline for profile
 
 
             // --- User Profile Data (simulated persistent storage) ---
@@ -983,6 +1016,8 @@
                 // Handle Profile page state
                 if (targetId === 'profile-page') {
                     setProfileEditMode(false); // Always start in view mode
+                    // Ensure the correct tab is shown when navigating to Profile
+                    switchProfileTab('personal-settings-tab');
                 }
             };
 
@@ -2068,6 +2103,7 @@
                     }
                     // Re-evaluate enablement of custom schedule inputs
                     setProfileEditMode(profileEditSaveBtn.textContent === 'Save Changes');
+                    updateProfileScheduleTimeline(); // Update timeline when schedule type changes
                 });
             }
 
@@ -2084,6 +2120,7 @@
                         customStartTimeInput.value = '';
                         customEndTimeInput.value = '';
                         customCommentInput.value = '';
+                        updateProfileScheduleTimeline(); // Update timeline when custom period added
                     } else {
                         showToast('Please enter start and end times for the custom period.', 2000);
                     }
@@ -2122,6 +2159,7 @@
                     populateScheduleTypes(); // Re-populate to include the new custom schedule
                     showToast('Custom schedule saved and selected!', 3000);
                     setProfileEditMode(false); // Exit edit mode after saving
+                    updateProfileScheduleTimeline(); // Update timeline after saving custom schedule
                 });
             }
 
@@ -2183,6 +2221,119 @@
             if (profileThemeSelect) profileThemeSelect.value = userProfileData.theme;
             if (profileUserTypeSelect) profileUserTypeSelect.value = userProfileData.userType;
             // Schedule type dropdown populated by populateScheduleTypes on load
+            
+            // --- Profile Tabs Logic ---
+            const tabContents = document.querySelectorAll('.tab-content-panel');
+            profileTabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const targetTabId = e.target.dataset.tabTarget;
+                    switchProfileTab(targetTabId);
+                });
+            });
+
+            const switchProfileTab = (targetTabId) => {
+                profileTabs.forEach(tab => tab.classList.remove('tab-active'));
+                tabContents.forEach(content => content.classList.add('hidden'));
+
+                const activeTab = document.querySelector(`.tabs .tab[data-tab-target="${targetTabId}"]`);
+                const targetContent = document.getElementById(targetTabId);
+
+                if (activeTab) activeTab.classList.add('tab-active');
+                if (targetContent) targetContent.classList.remove('hidden');
+
+                // If switching to schedule settings, update its timeline
+                if (targetTabId === 'schedule-settings-tab') {
+                    updateProfileScheduleTimeline();
+                }
+            };
+
+            // Function to update the 24-hour timeline in the Profile's Schedule Settings tab
+            const updateProfileScheduleTimeline = () => {
+                if (!profileScheduleTimeline) return;
+                profileScheduleTimeline.innerHTML = ''; // Clear existing segments
+
+                let periodsToDraw = [];
+                const selectedScheduleName = profileScheduleTypeSelect ? profileScheduleTypeSelect.value : '';
+
+                if (selectedScheduleName === 'Custom Schedule') {
+                    periodsToDraw = [...currentCustomSchedulePeriods];
+                } else if (selectedScheduleName) {
+                    const selectedUserType = profileUserTypeSelect ? profileUserTypeSelect.value : '';
+                    const predefinedSchedules = schedules[selectedUserType];
+                    const foundSchedule = predefinedSchedules ? predefinedSchedules.find(s => s.name === selectedScheduleName) : null;
+                    if (foundSchedule) {
+                        periodsToDraw = [...foundSchedule.ranges];
+                    }
+                }
+
+                // Sort periods to ensure correct rendering
+                periodsToDraw.sort((a, b) => {
+                    const [ha, ma] = a.start.split(':').map(Number);
+                    const [hb, mb] = b.start.split(':').map(Number);
+                    if (ha !== hb) return ha - hb;
+                    return ma - mb;
+                });
+
+                let currentTime = 0; // In hours from 00:00
+
+                periodsToDraw.forEach(period => {
+                    const startHour = parseFloat(period.start.split(':')[0]) + parseFloat(period.start.split(':')[1]) / 60;
+                    const endHour = parseFloat(period.end.split(':')[0]) + parseFloat(period.end.split(':')[1]) / 60;
+                    let duration = endHour - startHour;
+                    if (duration < 0) duration += 24; // Handle overnight periods
+
+                    // Add work period if there's a gap
+                    if (startHour > currentTime) {
+                        const workDuration = startHour - currentTime;
+                        const workWidth = (workDuration / 24) * 100;
+                        const workLeft = (currentTime / 24) * 100;
+                        const workDiv = document.createElement('div');
+                        workDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg');
+                        workDiv.style.left = `${workLeft}%`;
+                        workDiv.style.width = `${workWidth}%`;
+                        profileScheduleTimeline.appendChild(workDiv);
+                    }
+
+                    // Add rest period
+                    const restWidth = (duration / 24) * 100;
+                    const restLeft = (startHour / 24) * 100;
+                    const restDiv = document.createElement('div');
+                    restDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-green-500', 'rounded-lg');
+                    restDiv.style.left = `${restLeft}%`;
+                    restDiv.style.width = `${restWidth}%`;
+                    profileScheduleTimeline.appendChild(restDiv);
+
+                    currentTime = endHour;
+                    if (currentTime >= 24) currentTime -= 24; // Reset for next day if passed midnight
+                });
+
+                // Add remaining work period until end of day if any
+                if (currentTime < 24 && periodsToDraw.length > 0) {
+                    const lastPeriodEndHour = parseFloat(periodsToDraw[periodsToDraw.length - 1].end.split(':')[0]) + parseFloat(periodsToDraw[periodsToDraw.length - 1].end.split(':')[1]) / 60;
+                    if (lastPeriodEndHour < 24) { // Only if the last period doesn't extend past midnight
+                        const workDuration = 24 - lastPeriodEndHour;
+                        const workWidth = (workDuration / 24) * 100;
+                        const workLeft = (lastPeriodEndHour / 24) * 100;
+                        const workDiv = document.createElement('div');
+                        workDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg');
+                        workDiv.style.left = `${workLeft}%`;
+                        workDiv.style.width = `${workWidth}%`;
+                        profileScheduleTimeline.appendChild(workDiv);
+                    }
+                }
+                // Handle the case where there are no rest periods
+                if (periodsToDraw.length === 0 && profileScheduleTimeline) {
+                    const fullDayWorkDiv = document.createElement('div');
+                    fullDayWorkDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg');
+                    fullDayWorkDiv.style.left = '0%';
+                    fullDayWorkDiv.style.width = '100%';
+                    profileScheduleTimeline.appendChild(fullDayWorkDiv);
+                }
+            };
+
+            // Call updateProfileScheduleTimeline initially for default schedule view
+            updateProfileScheduleTimeline();
+
         });
     </script>
 </body>
