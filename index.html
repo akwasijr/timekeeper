@@ -123,7 +123,14 @@
                 <p class="text-lg text-gray-300">
                     Your playlist "<span id="created-playlist-title" class="font-semibold"></span>" has been added to Spotify.
                 </p>
-                <a id="open-playlist-url" href="#" target="_blank" rel="noopener noreferrer" class="inline-block bg-[#1DB954] text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-[#1ed760] transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#1DB954] focus:ring-opacity-50">
+                <div id="ai-playlist-summary-container" class="mt-4 p-4 bg-[#282828] rounded-lg border border-[#333] hidden">
+                    <p class="text-gray-300 font-semibold mb-2">AI-Generated Summary ✨</p>
+                    <p id="ai-playlist-summary" class="text-gray-400 text-sm"></p>
+                </div>
+                <button id="generate-summary-btn" class="mt-4 bg-purple-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg hover:bg-purple-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-600 focus:ring-opacity-50">
+                    Generate Playlist Summary ✨
+                </button>
+                <a id="open-playlist-url" href="#" target="_blank" rel="noopener noreferrer" class="inline-block bg-[#1DB954] text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-[#1ed760] transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#1DB954] focus:ring-opacity-50 mt-4">
                     Open Playlist on Spotify
                 </a>
                 <button id="create-another-playlist-btn" class="block mx-auto mt-8 bg-gray-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-gray-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-600 focus:ring-opacity-50">
@@ -208,6 +215,7 @@
         let newPlaylistUrl = '';
         let audioPlayer = new Audio();
         let playingTrackId = null;
+        let aiPlaylistSummary = ''; // New: stores AI-generated playlist summary
 
         // --- DOM Elements ---
         const appContainer = document.getElementById('app-container');
@@ -231,7 +239,10 @@
         const createPlaylistBtn = document.getElementById('create-playlist-btn');
 
         const createdView = document.getElementById('created-view');
-        const createdPlaylistTitleEl = document.getElementById('created-playlist-title'); // Corrected typo here, was 'document ='
+        const createdPlaylistTitleEl = document.getElementById('created-playlist-title');
+        const aiPlaylistSummaryContainer = document.getElementById('ai-playlist-summary-container'); // New
+        const aiPlaylistSummaryEl = document.getElementById('ai-playlist-summary'); // New
+        const generateSummaryBtn = document.getElementById('generate-summary-btn'); // New
         const openPlaylistUrlLink = document.getElementById('open-playlist-url');
         const createAnotherPlaylistBtn = document.getElementById('create-another-playlist-btn');
 
@@ -310,6 +321,10 @@
                     createdView.classList.remove('hidden');
                     createdPlaylistTitleEl.textContent = playlistTitle;
                     openPlaylistUrlLink.href = newPlaylistUrl;
+                    // Reset summary section visibility
+                    aiPlaylistSummaryContainer.classList.add('hidden');
+                    aiPlaylistSummaryEl.textContent = '';
+                    updateLoadingState(generateSummaryBtn, 'Generate Playlist Summary ✨');
                     break;
                 case 'auth_pending':
                     authPendingView.classList.remove('hidden');
@@ -332,7 +347,7 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        ${loadingText || originalText.replace('Get AI Song Suggestions', 'Getting Suggestions').replace('Create Playlist', 'Creating Playlist')}...
+                        ${loadingText || originalText.replace('Get AI Song Suggestions', 'Getting Suggestions').replace('Create Playlist', 'Creating Playlist').replace('Generate Playlist Summary', 'Generating Summary')}...
                     </span>
                 `;
             } else {
@@ -757,6 +772,57 @@
         }
 
         /**
+         * Uses Gemini API to generate a short summary/description for a playlist.
+         * @param {string} playlistTitle The title of the playlist.
+         * @param {Array<Object>} songs The list of selected songs in the playlist.
+         * @returns {Promise<string>} A generated description for the playlist.
+         */
+        async function generatePlaylistDescription(playlistTitle, songs) {
+            const trackList = songs.map(s => `${s.title} by ${s.artist || 'Unknown Artist'}`).join('\n');
+            const chatHistory = [];
+            const prompt = `Generate a short (1-2 sentences) creative description for a Spotify playlist titled "${playlistTitle}" which contains the following songs:
+            ${trackList}
+
+            Do not include the playlist title in the response. Focus purely on describing the vibe or purpose of the playlist based on its contents.`;
+
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory }; // No specific schema needed, just plain text response
+
+            const apiKey = ""; // Canvas will provide this API key at runtime.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Gemini API summary request failed:', response.status, response.statusText, errorText);
+                    throw new Error(`Gemini API summary request failed with status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Gemini API summary raw result:', result);
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text.trim();
+                } else {
+                    console.warn("Gemini API returned no candidates or content for summary.", result);
+                    return "No summary could be generated for this playlist.";
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API for summary:", error);
+                throw new Error("Failed to generate playlist summary.");
+            }
+        }
+
+
+        /**
          * Handles the Spotify authentication callback.
          */
         async function handleSpotifyCallback() {
@@ -868,7 +934,7 @@
                 parsedSongs = songsWithSpotify;
                 currentView = 'preview'; // Move to preview stage
                 stopPreview(); // Ensure no audio plays when moving views
-            } catch(err) { // Corrected from 'sanded(err)' to 'catch(err)'
+            } catch(err) {
                 console.error('Error getting AI suggestions or parsing songs:', err);
                 showMessageBox(`Error getting suggestions: ${err.message}. Please try again.`, 'error');
             } finally {
@@ -998,6 +1064,40 @@
             renderParsedSongsList(); // Re-render to update play/pause button state
         }
 
+        // --- New Feature: Generate Playlist Summary ---
+        generateSummaryBtn.addEventListener('click', async () => {
+            if (!playlistTitle || parsedSongs.length === 0) {
+                showMessageBox('Cannot generate summary: playlist title or songs are missing.', 'info');
+                return;
+            }
+
+            isLoading = true;
+            updateLoadingState(generateSummaryBtn, 'Generate Playlist Summary ✨', 'Generating Summary');
+            aiPlaylistSummaryContainer.classList.add('hidden'); // Hide previous summary
+            aiPlaylistSummaryEl.textContent = ''; // Clear previous summary
+            messageBoxContainer.innerHTML = ''; // Clear previous messages
+
+            try {
+                // To generate a summary, we need the *original* parsed songs from the preview step,
+                // as `parsedSongs` is reset after playlist creation.
+                // For this example, we'll use `parsedSongs` assuming it still holds the final selection,
+                // but in a real app, you might want to store the selected songs more persistently
+                // or fetch them again from Spotify.
+                // For now, let's assume `parsedSongs` still has the list of tracks chosen before playlist creation.
+                const summary = await generatePlaylistDescription(createdPlaylistTitleEl.textContent, parsedSongs);
+                aiPlaylistSummary = summary;
+                aiPlaylistSummaryEl.textContent = summary;
+                aiPlaylistSummaryContainer.classList.remove('hidden');
+            } catch (err) {
+                console.error('Error generating playlist summary:', err);
+                showMessageBox(`Failed to generate summary: ${err.message}.`, 'error');
+            } finally {
+                isLoading = false;
+                updateLoadingState(generateSummaryBtn, 'Generate Playlist Summary ✨');
+            }
+        });
+
+
         /**
          * Resets the application to the initial input state, clearing all data.
          */
@@ -1009,6 +1109,7 @@
             isLoading = false;
             spotifyProfile = null; // Re-authenticate is needed
             newPlaylistUrl = '';
+            aiPlaylistSummary = ''; // Clear summary on reset
             stopPreview(); // Stop any playing audio
             messageBoxContainer.innerHTML = ''; // Clear any lingering messages
             handleSpotifyCallback(); // Re-initialize auth flow to check for existing token
