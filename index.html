@@ -1,619 +1,2340 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Powered Spotify Playlist Maker</title>
+    <title>Rest Tracker App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- DaisyUI CDN (built on top of Tailwind) -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --color-primary-brand-blue: #004882; /* Updated primary brand color */
+            --color-secondary-brand-orange: #D97944; /* Updated secondary brand color */
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1db954 0%, #191414 100%);
-            min-height: 100vh;
-            color: #fff;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .header p {
-            opacity: 0.8;
-            font-size: 1.1rem;
-        }
-
-        .step {
-            display: none;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .step.active {
-            display: block;
-        }
-
-        .auth-step {
-            text-align: center;
-        }
-
-        .spotify-btn {
-            background: #1db954;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-
-        .spotify-btn:hover {
-            background: #1ed760;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(29, 185, 84, 0.4);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: none;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            font-size: 1rem;
         }
-
-        .songs-input {
-            margin-bottom: 20px;
-        }
-
-        .song-input {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-
-        .song-input input {
-            flex: 1;
-        }
-
-        .btn {
-            background: #1db954;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background: #1ed760;
-        }
-
-        .btn-secondary {
-            background: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #444;
-        }
-
-        .btn-danger {
-            background: #e22134;
-        }
-
-        .btn-danger:hover {
-            background: #ff1744;
-        }
-
-        .processing {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #1db954;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .song-preview {
-            background: rgba(255, 255, 255, 0.1);
+        ::-webkit-scrollbar-thumb {
+            background: #888;
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Custom styles for the screenshot UI */
+        .card {
+            border-radius: 0.75rem; /* Equivalent to rounded-lg */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* Equivalent to shadow-md */
+        }
+
+        /* Primary Button Style - Filled with color, white text */
+        .btn-primary {
+            background-color: var(--color-primary-brand-blue);
+            border-color: var(--color-primary-brand-blue);
+            color: white;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: #003a6a; /* Slightly darker primary blue on hover */
+            border-color: #003a6a;
+        }
+         .btn-primary:active {
+            transform: translateY(1px); /* Subtle press effect */
+        }
+
+        /* Secondary Button Style - Outlined, white background, colored text matching border */
+        .btn-secondary-outline {
+            background-color: white;
+            border: 1px solid var(--color-primary-brand-blue); /* Primary blue for outline */
+            color: var(--color-primary-brand-blue); /* Primary blue for text */
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+
+        .btn-secondary-outline:hover {
+            background-color: #eff6ff; /* Light blue on hover */
+            border-color: #003a6a;
+            color: #003a6a;
+        }
+        .btn-secondary-outline:active {
+            transform: translateY(1px); /* Subtle press effect */
+        }
+
+        /* Success Button (used for Save Day) */
+        .btn-success {
+            background-color: #22c55e; /* Green for success */
+            border-color: #22c55e;
+            color: white;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-success:hover {
+            background-color: #16a34a; /* Darker green on hover */
+            border-color: #16a34a;
+        }
+        .btn-success:active {
+            transform: translateY(1px); /* Subtle press effect */
+        }
+
+
+        /* Custom colors from screenshot */
+        .bg-custom-green {
+            background-color: #d1fae5; /* Light green from screenshot */
+        }
+        .text-custom-green {
+            color: #065f46; /* Darker green text */
+        }
+        .bg-custom-red {
+            background-color: #fee2e2; /* Light red from screenshot */
+        }
+        .text-custom-red {
+            color: #991b1b; /* Darker red text */
+        }
+        .bg-custom-blue {
+            background-color: #eff6ff; /* Light blue from screenshot */
+        }
+        .text-custom-blue {
+            color: #1e40af; /* Darker blue text */
+        }
+
+        /* Badge colors (DaisyUI default with slight adjustments) */
+        .badge-info {
+            background-color: #bfdbfe; /* DaisyUI info badge background */
+            color: #1e40af; /* DaisyUI info badge text */
+        }
+        .badge-warning {
+             background-color: #fef9c3; /* DaisyUI warning badge background */
+             color: #a16207; /* DaisyUI warning badge text */
+        }
+        .badge-success {
+             background-color: #dcfce7; /* DaisyUI success badge background */
+             color: #16a34a; /* DaisyUI success badge text */
+        }
+        .badge-error { /* For violations */
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Responsive badge text size */
+        .badge {
+            font-size: 0.75rem; /* text-xs */
+            padding-left: 0.5rem; /* px-2 */
+            padding-right: 0.5rem; /* px-2 */
+            height: 1.5rem; /* h-6 */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .badge {
+                font-size: 0.875rem; /* text-sm */
+                padding-left: 0.75rem; /* px-3 */
+                padding-right: 0.75rem; /* px-3 */
+                height: 2rem; /* h-8 */
+            }
+        }
+        /* Sidebar specific styles */
+        .sidebar-hidden {
+            transform: translateX(-100%);
+            width: 0;
+            overflow: hidden;
+        }
+        .sidebar-visible {
+            transform: translateX(0);
+            width: 16rem; /* w-64 */
+        }
+        @media (min-width: 1024px) { /* lg breakpoint */
+            .sidebar-hidden {
+                transform: translateX(0);
+                width: 16rem; /* w-64 */
+                overflow: visible;
+            }
+        }
+
+        /* Toast notification styles */
+        .toast-container {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column-reverse; /* New toasts appear at bottom */
+            pointer-events: none; /* Allow clicks through empty space */
         }
 
-        .song-preview img {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
+        .toast-item {
+            background-color: #333;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transform: translateY(20px);
+            pointer-events: auto; /* Re-enable clicks on the toast itself */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .song-info {
-            flex: 1;
-        }
-
-        .song-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .song-artist {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .preview-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .success-step {
-            text-align: center;
-        }
-
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: #1db954;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-
-        .preview-controls {
-            text-align: center;
-            margin-top: 20px;
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .ai-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
+        .toast-item.show {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>
-                🎵 AI Playlist Maker
-            </h1>
-            <p>Create amazing Spotify playlists with AI-powered song parsing</p>
-        </div>
-
-        <!-- Authentication Step -->
-        <div id="auth-step" class="step active auth-step">
-            <h2>Connect to Spotify</h2>
-            <p style="margin: 20px 0;">Connect your Spotify account to start creating playlists</p>
-            <button id="auth-btn" class="spotify-btn">
-                🎵 Connect with Spotify
-            </button>
-        </div>
-
-        <!-- Input Step -->
-        <div id="input-step" class="step">
-            <h2>Create Your Playlist</h2>
-            
-            <div class="input-group">
-                <label for="playlist-title">Playlist Title:</label>
-                <input type="text" id="playlist-title" placeholder="Enter your playlist name...">
-            </div>
-
-            <div class="songs-input">
-                <label>Add Songs (artist and song name):</label>
-                <div id="songs-container">
-                    <div class="song-input">
-                        <input type="text" placeholder="e.g., 'Bohemian Rhapsody by Queen' or 'Ed Sheeran Shape of You'">
-                        <button class="btn btn-danger" onclick="removeSongInput(this)">×</button>
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-base-100 shadow-lg flex flex-col justify-between py-6 px-4 transition-all duration-300 ease-in-out lg:w-64 flex-shrink-0 sidebar-visible">
+            <div>
+                <div class="flex justify-between items-center text-xl font-bold text-primary-brand-blue mb-10 pl-2">
+                    <div class="flex items-center">
+                        <!-- Company Logo SVG -->
+                        <svg class="w-8 h-8 mr-2" xmlns="http://www.w3.org/2000/svg" width="2500" height="2500" viewBox="0 0 192.756 192.756">
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#fff" d="M0 0h192.756v192.756H0V0z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613" d="M51.292 128.717l27.074 26.785h69.997v-12.086l-28.394-26.785-68.677 12.086z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" d="M51.292 128.717l27.075 26.785h69.996v-12.086l-28.394-26.785-68.677 12.086z"/>
+                            <path fill="none" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613" d="M51.292 128.717l27.074 26.785h69.997v-12.086l-28.394-26.785-68.677 12.086"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M119.969 116.631V76.452l23.443 20.579h11.225V41.173l-23.442-21.885-40.612 7.186 1.321 95.057 28.065-4.9z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" d="M119.969 116.631V76.452l23.443 20.579h11.225V41.173l-23.442-21.885-40.612 7.186 1.321 95.057 28.065-4.9z"/>
+                            <path fill="none" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613" d="M119.969 116.631V76.452l23.443 20.579h11.225V41.174l-23.442-21.886-40.612 7.186 1.32 95.057 28.066-4.9"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M43.698 74.166L66.15 97.357h15.188L80.017 22.88H67.471L43.698 74.166z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" d="M43.698 74.166L66.15 97.357h15.188L80.017 22.88H67.471L43.698 74.166z"/>
+                            <path fill="none" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613" d="M43.698 74.166L66.15 97.357h15.188L80.017 22.88H67.471L43.698 74.166"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#d97944" stroke="#d97944" stroke-width="1.851" stroke-miterlimit="2.613" d="M43.368 18.961l87.827.327v54.551h-12.877l-13.207-46.058H94.545v88.524h25.424v12.412H49.971v-12.412h29.386V27.781H67.471L55.915 73.839H43.368V18.961z"/>
+                            <path d="M99.828 139.824c0-17.641-26.414-17.641-26.414 0 0 17.313 26.414 17.313 26.414 0z" fill-rule="evenodd" clip-rule="evenodd" fill="#d97944" stroke="#d97944" stroke-width="1.851" stroke-miterlimit="2.613"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" d="M82.659 155.83l21.46 17.965 17.17-20.578-38.63 2.613z"/>
+                            <path d="M90.913 139.824c0-5.555-8.584-5.555-8.584 0 0 5.553 8.584 5.553 8.584 0z" fill-rule="evenodd" clip-rule="evenodd" fill="#1c4882" stroke="#1c4882" stroke-width="1.851" stroke-miterlimit="2.613"/>
+                        </svg>
+                        Rest Tracker
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="addSongInput()">+ Add Another Song</button>
+                <ul class="menu p-0 text-base-content">
+                    <li>
+                        <a href="#" class="nav-link flex items-center mb-2 active bg-blue-100 text-blue-800 rounded-lg" data-target="dashboard-page">
+                            <i class="fas fa-chart-line mr-3"></i>Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center mb-2 rounded-lg" data-target="record-hours-page">
+                            <i class="fas fa-clock mr-3"></i>Record Hours
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center mb-2 rounded-lg" data-target="my-records-page">
+                            <i class="fas fa-file-alt mr-3"></i>My Records
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center mb-2 rounded-lg" data-target="profile-page">
+                            <i class="fas fa-user-circle mr-3"></i>Profile
+                        </a>
+                    </li>
+                </ul>
             </div>
-
-            <div style="text-align: center; margin-top: 30px;">
-                <button id="process-btn" class="btn" style="padding: 15px 30px; font-size: 1.1rem;">
-                    ✨ Process with AI
-                </button>
+            <div class="border-t border-base-200 pt-6">
+                <div class="text-xs text-base-content-secondary mb-2 pl-2">Month Completion</div>
+                <progress class="progress progress-primary w-full" value="70" max="100"></progress>
+                <div class="text-right text-xs text-base-content-secondary mt-1 pr-2">70%</div>
+                <div class="flex items-center mt-6 p-2 bg-base-200 rounded-lg">
+                    <div class="avatar online mr-3">
+                        <div class="w-10 rounded-full">
+                            <img src="https://placehold.co/40x40/b3e0ff/007bff?text=JS" alt="John Smith avatar">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="font-medium text-sm text-base-content">John Smith</div>
+                        <div class="text-xs text-base-content-secondary">Deck Officer</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Processing Step -->
-        <div id="processing-step" class="step">
-            <div class="processing">
-                <div class="spinner"></div>
-                <h3>AI is parsing your songs...</h3>
-                <p>Please wait while we analyze and find your tracks on Spotify</p>
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col mx-0 px-0 py-4 sm:p-8 overflow-y-auto"> <!-- px-0 on mobile, p-8 on sm and up -->
+            <!-- Top Nav/Header -->
+            <div class="flex justify-between items-center py-4 border-b border-base-200 mb-6 sticky top-0 bg-white z-10 rounded-b-lg shadow-sm px-0 sm:px-6"> <!-- px-0 on mobile, px-6 on sm and up -->
+                <div class="flex items-center h-full">
+                    <!-- Hamburger/Close button to open/close sidebar -->
+                    <button id="sidebar-toggle-btn" class="btn btn-ghost btn-circle lg:hidden mr-4">
+                        <i class="fas fa-bars text-xl"></i> <!-- Default icon -->
+                    </button>
+                    <h1 id="page-title" class="text-2xl font-semibold text-base-content">Dashboard</h1>
+                </div>
+                <!-- Quick Navigation Icons (visible only on small screens when sidebar is closed) -->
+                <div id="quick-nav-icons" class="flex items-center space-x-4 lg:hidden hidden p-2 rounded-full bg-base-100">
+                    <a href="#" class="quick-nav-link text-white hover:text-primary" data-target="dashboard-page" title="Dashboard">
+                        <i class="fas fa-chart-line text-xl"></i>
+                    </a>
+                    <a href="#" class="quick-nav-link text-white hover:text-primary" data-target="record-hours-page" title="Record Hours">
+                        <i class="fas fa-clock text-xl"></i>
+                    </a>
+                    <a href="#" class="quick-nav-link text-white hover:text-primary" data-target="my-records-page" title="My Records">
+                        <i class="fas fa-file-alt text-xl"></i>
+                    </a>
+                    <a href="#" class="quick-nav-link text-white hover:text-primary" data-target="profile-page" title="Profile">
+                        <i class="fas fa-user-circle text-xl"></i>
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <!-- Preview Step -->
-        <div id="preview-step" class="step">
-            <h2>Review Your Playlist</h2>
-            <div class="ai-badge">
-                ✨ Powered by Claude AI
-            </div>
-            
-            <div id="playlist-preview">
-                <!-- Songs will be populated here -->
+            <!-- Dashboard Page Content -->
+            <div id="dashboard-page" class="page-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4 sm:px-0"> <!-- Added px-4 for content inside -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6 col-span-full lg:col-span-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-base-content">June 2025 Record Status</h3>
+                            <div class="badge badge-warning font-semibold">In Progress</div>
+                        </div>
+                        <p class="text-base-content-secondary mb-6 text-sm">Track your monthly compliance progress.</p>
+                        <div class="grid grid-cols-3 gap-4 text-center mb-8">
+                            <div class="bg-custom-blue p-4 rounded-lg">
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue" id="record-days-recorded">17</div>
+                                <div class="text-sm text-base-content-secondary">Days Recorded</div>
+                            </div>
+                            <div class="bg-custom-green p-4 rounded-lg">
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-green">15</div>
+                                <div class="text-sm text-base-content-secondary">Compliant Days</div>
+                            </div>
+                            <div class="bg-custom-red p-4 rounded-lg cursor-pointer" id="violations-kpi-card"> <!-- Made clickable -->
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-red">2</div>
+                                <div class="text-sm text-base-content-secondary">Violations</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary w-full rounded-lg" id="continue-recording-btn">Continue Recording</button>
+                    </div>
+
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-base-content mb-4">Today: June 17, 2025</h3>
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-base-content-secondary text-sm">Total Rest:</span>
+                                <span class="font-bold text-base-content text-sm">10.5 hours</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-base-content-secondary text-sm">24hr Status:</span>
+                                <span class="font-bold text-success text-sm">Compliant</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-base-content-secondary text-sm">7-day Total:</span>
+                                <span class="font-bold text-base-content text-sm">77 hours</span>
+                            </div>
+                        </div>
+                        <h4 class="text-sm font-semibold text-base-content-secondary mb-2">Rest Periods Today</h4>
+                        <ul class="list-disc list-inside space-y-1 mb-6">
+                            <li class="text-base-content-secondary text-sm">00:00 - 06:00 (6 hours)</li>
+                            <li class="text-base-content-secondary text-sm">14:00 - 18:30 (4.5 hours)</li>
+                        </ul>
+                        <button class="btn btn-secondary-outline w-full rounded-lg" id="edit-today-hours-btn">Edit Today's Hours</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 sm:px-0"> <!-- Added px-4 for internal content -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-base-content mb-4">Pending Actions</h3>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-semibold text-base-content text-sm">May 2025 Record</h4>
+                                <div class="badge badge-info font-semibold">Awaiting Acknowledgment</div>
+                            </div>
+                            <p class="text-sm text-base-content-secondary mb-4">Master has signed your May record. Please acknowledge to complete the process.</p>
+                            <button class="btn btn-primary btn-sm rounded-lg" id="acknowledge-may-record-btn">Acknowledge Now</button>
+                        </div>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-semibold text-base-content text-sm">Reminder</h4>
+                                <div class="badge badge-warning font-semibold">Daily</div>
+                            </div>
+                            <p class="text-sm text-base-content-secondary">Don't forget to record your rest hours for today before midnight.</p>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-base-content mb-4">Recent Activity</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-success mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-base-content">June 16 hours recorded</p>
+                                    <p class="text-xs text-base-content-secondary">10.5 hours rest - Compliant</p>
+                                    <span class="text-xs text-base-content-secondary">2 hours ago</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-success mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-base-content">May 2025 record signed by Master</p>
+                                    <p class="text-xs text-base-content-secondary">Awaiting your acknowledgment</p>
+                                    <span class="text-xs text-base-content-secondary">1 day ago</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-error mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-base-content">June 14 violation detected</p>
+                                    <p class="text-xs text-base-content-secondary">Less than 10 hours rest in 24hr period</p>
+                                    <span class="text-xs text-base-content-secondary">3 days ago</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <div class="preview-controls">
-                <button class="btn btn-secondary" onclick="goBack()">← Back to Edit</button>
-                <button id="create-playlist-btn" class="btn" style="padding: 15px 30px;">
-                    🎵 Create Playlist
-                </button>
-            </div>
-        </div>
+            <div id="my-records-page" class="page-content hidden">
+                <div class="flex justify-between items-center mb-6 px-4"> <!-- Added px-4 for internal content -->
+                    <h2 class="text-xl font-semibold text-base-content">My Records</h2>
+                    <div class="flex space-x-2">
+                        <div class="dropdown">
+                            <div tabindex="0" role="button" class="btn btn-sm btn-ghost rounded-lg">All Years <i class="fas fa-chevron-down ml-1"></i></div>
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-36">
+                                <li><a>2025</a></li>
+                                <li><a>2024</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown">
+                            <div tabindex="0" role="button" class="btn btn-sm btn-ghost rounded-lg">All Status <i class="fas fa-chevron-down ml-1"></i></div>
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-36">
+                                <li><a>Signed & Completed</a></li>
+                                <li><a>Awaiting My Signature</a></li>
+                                <li><a>Pending Master Signature</a></li>
+                            </ul>
+                        </div>
+                        <div class="relative">
+                            <input type="text" placeholder="Search records..." class="input input-bordered input-sm rounded-lg pl-8" />
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-base-content-secondary"></i>
+                        </div>
+                        <button class="btn btn-secondary-outline btn-sm rounded-lg" id="export-all-btn"><i class="fas fa-download mr-2"></i>Export All</button>
+                    </div>
+                </div>
 
-        <!-- Success Step -->
-        <div id="success-step" class="step success-step">
-            <div class="success-icon">
-                ✓
+                <div class="overflow-x-auto bg-base-100 rounded-lg shadow-md">
+                    <table class="table w-full">
+                        <thead>
+                            <tr>
+                                <th>PERIOD</th>
+                                <th>DAYS RECORDED</th>
+                                <th>STATUS</th>
+                                <th>MASTER SIGNATURE</th>
+                                <th>MY SIGNATURE</th>
+                                <th>COMPLIANCE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="font-bold">June 2025</div>
+                                    <div class="text-sm opacity-50">Jun 1 - Jun 30</div>
+                                </td>
+                                <td>30/30</td>
+                                <td><div class="badge badge-success font-semibold">Signed & Completed</div></td>
+                                <td><i class="fas fa-check text-success mr-1"></i>Signed</td>
+                                <td><i class="fas fa-check text-success mr-1"></i>Signed</td>
+                                <td><div class="badge badge-success">Compliant</div></td>
+                                <td class="flex items-center space-x-2">
+                                    <button class="btn btn-ghost btn-xs rounded-lg view-record-btn" data-record-id="june2025">View</button>
+                                    <i class="fas fa-download text-base-content-secondary cursor-pointer download-record-btn"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="font-bold">May 2025</div>
+                                    <div class="text-sm opacity-50">May 1 - May 31</div>
+                                </td>
+                                <td>31/31</td>
+                                <td><div class="badge badge-warning font-semibold">Awaiting My Signature</div></td>
+                                <td><i class="fas fa-check text-success mr-1"></i>Signed</td>
+                                <td id="may-signature-status"><span class="text-warning font-semibold">Pending</span></td>
+                                <td><div class="badge badge-success">Compliant</div></td>
+                                <td class="flex items-center space-x-2">
+                                    <button class="btn btn-ghost btn-xs rounded-lg view-record-btn" data-record-id="may2025">View</button>
+                                    <button class="btn btn-primary btn-xs rounded-lg" id="sign-may-record-btn">Sign</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <h2>Playlist Created Successfully!</h2>
-            <p id="success-message">Your playlist has been added to your Spotify account.</p>
-            
-            <div style="margin-top: 30px;">
-                <button class="btn" onclick="createNewPlaylist()" style="padding: 15px 30px;">
-                    Create Another Playlist
-                </button>
+
+            <div id="record-details-page" class="page-content hidden">
+                <button class="btn btn-ghost btn-sm mb-4 ml-4 sm:ml-0" id="back-to-records-list"><i class="fas fa-arrow-left mr-2"></i>Back to Records List</button> <!-- Adjusted margin -->
+                <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Record Details</h2> <!-- Adjusted padding -->
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 px-4 sm:px-0"> <!-- Added px-4 for content inside -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6 col-span-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-base-content" id="record-details-status-title">June 2025 Rest Hours Record</h3>
+                            <div class="badge badge-success font-semibold" id="record-details-overall-status">Signed & Completed</div>
+                        </div>
+                        <p class="text-base-content-secondary mb-6 text-sm">Complete monthly record with all signatures.</p>
+                        <div class="grid grid-cols-4 gap-4 text-center mb-8">
+                            <div class="bg-custom-blue p-4 rounded-lg">
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue" id="record-days-recorded">30</div>
+                                <div class="text-sm text-base-content-secondary">Days Recorded</div>
+                            </div>
+                            <div class="bg-custom-green p-4 rounded-lg">
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-green">100 %</div>
+                                <div class="text-sm text-base-content-secondary">Compliance Rate</div>
+                            </div>
+                            <div class="bg-custom-blue p-4 rounded-lg">
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue" id="record-total-rest">360</div>
+                                <div class="text-sm text-base-content-secondary">Total Rest Hours</div>
+                            </div>
+                            <div class="bg-custom-blue p-4 rounded-lg">
+                                <div class="text-2xl lg:text-3xl font-bold text-custom-blue" id="record-total-work"></div> <div class="text-sm text-base-content-secondary">Total Work Hours</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-base-content mb-4">Signature Status</h4>
+                                <div class="flex items-center mb-2">
+                                    <span class="text-base-content-secondary mr-2 text-sm">Master Signature:</span>
+                                    <span class="font-bold text-success text-sm"><i class="fas fa-check mr-1"></i>Signed (<span id="master-signature-date">June 30, 2025</span>)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-base-content-secondary mr-2 text-sm">Seafarer Signature:</span>
+                                    <span class="font-bold text-success text-sm"><i class="fas fa-check mr-1"></i>Signed (<span id="seafarer-signature-date">July 1, 2025</span>)</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-base-content mb-4">Record Actions</h4>
+                                <button class="btn btn-primary w-full mb-2 rounded-lg" id="print-pdf-report-btn"><i class="fas fa-print mr-2"></i>Print PDF Report</button>
+                                <button class="btn btn-secondary-outline w-full rounded-lg" id="export-csv-report-btn"><i class="fas fa-file-csv mr-2"></i>Export CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold text-base-content mb-4 px-4 sm:px-0">Daily Rest Hours Breakdown</h3> <!-- Adjusted padding -->
+                <p class="text-base-content-secondary mb-4 text-sm px-4 sm:px-0">Detailed view of each day's rest periods and compliance status</p> <!-- Adjusted padding -->
+
+                <div class="overflow-x-auto bg-base-100 rounded-lg shadow-md">
+                    <table class="table w-full">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>REST PERIODS</th>
+                                <th>TOTAL HOURS</th>
+                                <th>7-DAY TOTAL</th>
+                                <th>STATUS</th>
+                                <th>COMMENT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-rest-breakdown-tbody-details">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div id="record-hours-page" class="page-content hidden">
+                <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Record Hours</h2> <!-- Adjusted padding -->
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 sm:px-0"> <!-- Added px-4 for content inside -->
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <button class="btn btn-ghost btn-sm rounded-lg" id="prev-month-btn"><i class="fas fa-chevron-left"></i></button>
+                            <h3 class="text-lg font-semibold text-base-content" id="current-month-year">June 2025</h3>
+                            <button class="btn btn-ghost btn-sm rounded-lg" id="next-month-btn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <p class="text-center text-sm text-base-content-secondary mb-4">Select date to record hours</p>
+                        <!-- Message for future dates -->
+                        <p id="future-date-message" class="text-center text-error text-sm mb-4 hidden">This day has not happened yet. Hours cannot be entered for future dates.</p>
+                        <div class="grid grid-cols-7 text-center gap-2 mb-6" id="calendar-grid">
+                            <div class="text-xs font-semibold text-base-content-secondary">Sun</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Mon</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Tue</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Wed</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Thu</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Fri</div>
+                            <div class="text-xs font-semibold text-base-content-secondary">Sat</div>
+
+                            </div>
+                    </div>
+
+                    <div class="card bg-base-100 shadow-md rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-base-content mb-4" id="editing-hours-title">Editing Hours for June 17, 2025</h3>
+                        <p class="text-sm text-base-content-secondary mb-4">Add rest periods for the selected day</p>
+
+                        <div class="input-fields-container">
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <input type="time" class="input input-bordered w-full rounded-lg" id="start-time" value="00:00">
+                                <input type="time" class="input input-bordered w-full rounded-lg" id="end-time" value="06:00">
+                            </div>
+                            <div class="mb-4">
+                                <input type="text" placeholder="Activity / Comment (Optional)" class="input input-bordered w-full rounded-lg" id="comment-input">
+                            </div>
+                            <button class="btn btn-primary w-full mb-6 rounded-lg" id="add-rest-period-btn"><i class="fas fa-plus mr-2"></i>Add Rest Period</button>
+                        </div>
+
+                        <h4 class="text-sm font-semibold text-base-content-secondary mb-2">Added Rest Periods</h4>
+                        <div class="space-y-3 mb-6" id="rest-periods-list">
+                            </div>
+                        <div class="flex justify-between space-x-4">
+                            <button class="btn btn-primary w-1/2 rounded-lg" id="save-record-btn"><i class="fas fa-save mr-2"></i>Save Record</button>
+                            <button class="btn btn-success w-1/2 rounded-lg" id="sign-and-send-btn"><i class="fas fa-paper-plane mr-2"></i>Sign & Send</button>
+                        </div>
+                        <button class="btn btn-secondary-outline w-full mt-4 rounded-lg hidden" id="edit-with-reason-btn"><i class="fas fa-edit mr-2"></i>Edit with Reason</button>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-md rounded-lg p-6 mt-6 px-4 sm:px-6"> <!-- Adjusted padding -->
+                    <h4 class="text-lg font-semibold text-base-content-secondary mb-2">24-Hour Timeline</h4>
+                    <div class="w-full bg-gray-200 rounded-lg h-10 relative overflow-hidden" id="timeline-chart">
+                        </div>
+                    <div class="flex justify-between text-xs text-base-content-secondary mt-2">
+                        <span>00:00</span><span>03:00</span><span>06:00</span><span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span><span>24:00</span>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-4">
+                        <div class="flex items-center">
+                            <span class="w-4 h-4 bg-green-500 rounded-full mr-2"></span>
+                            <span class="text-sm text-base-content">Rest Period</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-4 h-4 bg-gray-400 rounded-full mr-2"></span>
+                            <span class="text-sm text-base-content">Work Period</span>
+                        </div>
+                    </div>
+                    <div class="text-right mt-4">
+                        <div class="text-base-content text-sm">Total Rest: <span class="font-bold" id="total-rest-hours">0 hours</span></div>
+                        <div class="text-base-content text-sm">Total Work: <span class="font-bold" id="total-work-hours">0 hours</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="profile-page" class="page-content hidden">
+                <h2 class="text-xl font-semibold text-base-content mb-6 px-4 sm:px-0">Profile Settings</h2> <!-- Adjusted padding -->
+                
+                <!-- Tabs for Profile Settings -->
+                <div role="tablist" class="tabs tabs-boxed tabs-md mb-6 mx-4 sm:mx-0">
+                    <a role="tab" class="tab tab-active" data-tab-target="personal-settings-tab">Personal Settings</a>
+                    <a role="tab" class="tab" data-tab-target="schedule-settings-tab">Schedule Settings</a>
+                </div>
+
+                <!-- Personal Settings Tab Content -->
+                <div id="personal-settings-tab" class="tab-content-panel active-tab-content card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6 mb-6">
+                    <h3 class="text-lg font-semibold text-base-content mb-4">Personal Settings</h3>
+                    <div class="flex flex-col md:flex-row md:space-x-8">
+                        <div class="flex-1 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Name</label>
+                                <input type="text" id="profile-name" value="John Smith" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Position</label>
+                                <input type="text" id="profile-position" value="Deck Officer" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Email</label>
+                                <input type="email" id="profile-email" value="john.smith@example.com" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Contact Number</label>
+                                <input type="text" id="profile-contact" value="+1 (555) 123-4567" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                        </div>
+                        <div class="flex-1 space-y-4 mt-6 md:mt-0">
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Preferred Theme</label>
+                                <select id="profile-theme" class="select select-bordered w-full rounded-lg" disabled>
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                </select>
+                            </div>
+                            <div class="pt-4">
+                                <h4 class="text-sm font-medium text-base-content-secondary mb-2">Password Settings</h4>
+                                <button class="btn btn-secondary-outline w-full rounded-lg">Change Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Settings Tab Content -->
+                <div id="schedule-settings-tab" class="tab-content-panel hidden card bg-base-100 shadow-md rounded-lg p-6 px-4 sm:px-6 mb-6">
+                    <h3 class="text-lg font-semibold text-base-content mb-4">User & Schedule Settings</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-base-content-secondary mb-1">User Type</label>
+                            <select id="profile-user-type" class="select select-bordered w-full rounded-lg" disabled>
+                                <option value="">Select User Type</option>
+                                <option value="Deck Officer">Deck Officer</option>
+                                <option value="Engineer Officer">Engineer Officer</option>
+                                <option value="Rating">Rating</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-base-content-secondary mb-1">Schedule Type</label>
+                            <select id="profile-schedule-type" class="select select-bordered w-full rounded-lg" disabled>
+                                <option value="">Select Schedule</option>
+                                <option value="Custom Schedule">Custom Schedule</option> <!-- Option for custom schedule -->
+                            </select>
+                        </div>
+
+                        <!-- Custom Schedule Definition Area -->
+                        <div id="custom-schedule-section" class="hidden border border-base-200 p-4 rounded-lg bg-base-50 space-y-4">
+                            <h4 class="text-md font-semibold text-base-content mb-2">Define Custom Schedule</h4>
+                            <div>
+                                <label class="block text-sm font-medium text-base-content-secondary mb-1">Custom Schedule Name</label>
+                                <input type="text" id="custom-schedule-name-input" class="input input-bordered w-full rounded-lg" placeholder="e.g., My Unique Shift" disabled>
+                            </div>
+                            <h5 class="text-sm font-semibold text-base-content-secondary mb-2">Rest Periods for Custom Schedule</h5>
+                            <div id="custom-schedule-periods-list" class="space-y-2">
+                                <!-- Custom periods will be added here -->
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="time" id="custom-start-time" class="input input-bordered w-full rounded-lg" disabled>
+                                <input type="time" id="custom-end-time" class="input input-bordered w-full rounded-lg" disabled>
+                            </div>
+                            <input type="text" id="custom-comment-input" class="input input-bordered w-full rounded-lg" placeholder="Comment (Optional)" disabled>
+                            <button class="btn btn-primary btn-sm w-full rounded-lg" id="add-custom-period-btn" disabled><i class="fas fa-plus mr-2"></i>Add Period to Custom</button>
+                            <button class="btn btn-success w-full rounded-lg" id="save-custom-schedule-btn" disabled><i class="fas fa-save mr-2"></i>Save Custom Schedule</button>
+                        </div>
+
+                        <!-- 24-Hour Schedule Timeline (Visual) -->
+                        <div class="mt-6">
+                            <h4 class="text-md font-semibold text-base-content-secondary mb-2">24-Hour Schedule Preview</h4>
+                            <div class="w-full bg-gray-200 rounded-lg h-10 relative overflow-hidden" id="profile-schedule-timeline">
+                                <!-- Timeline segments will be dynamically generated here -->
+                            </div>
+                            <div class="flex justify-between text-xs text-base-content-secondary mt-2">
+                                <span>00:00</span><span>03:00</span><span>06:00</span><span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span><span>24:00</span>
+                            </div>
+                            <div class="flex items-center space-x-4 mt-4">
+                                <div class="flex items-center">
+                                    <span class="w-4 h-4 bg-green-500 rounded-full mr-2"></span>
+                                    <span class="text-sm text-base-content">Rest Period</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-4 h-4 bg-gray-400 rounded-full mr-2"></span>
+                                    <span class="text-sm text-base-content">Work Period</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button class="btn btn-secondary-outline hidden" id="profile-cancel-btn">Cancel</button>
+                    <button class="btn btn-primary" id="profile-edit-save-btn">Edit Profile</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <div id="toast-container" class="toast-container"></div>
+
+    <dialog id="edit-reason-modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">Reason for Editing</h3>
+            <p class="py-4">Please select a reason for editing this signed record:</p>
+            <div class="form-control">
+                <label class="label cursor-pointer">
+                    <span class="label-text">Mistake on initial entry</span>
+                    <input type="radio" name="edit-reason" class="radio radio-primary" value="Mistake on initial entry" checked />
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="label cursor-pointer">
+                    <span class="label-text">Asked to edit by Captain</span>
+                    <input type="radio" name="edit-reason" class="radio radio-primary" value="Asked to edit by Captain" />
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="label cursor-pointer">
+                    <span class="label-text">Edit with comments</span>
+                    <input type="radio" name="edit-reason" class="radio radio-primary" value="Edit with comments" />
+                </label>
+            </div>
+            <textarea id="edit-comment-textarea" class="textarea textarea-bordered w-full mt-4 hidden" placeholder="Add your comments here..."></textarea>
+            <div class="modal-action">
+                <button class="btn btn-primary" id="confirm-edit-reason-btn">Confirm Edit</button>
+                <button class="btn btn-ghost" id="cancel-edit-reason-btn">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+
     <script>
-        // Global variables
-        let accessToken = null;
-        let userId = null;
-        let currentStep = 'auth';
-        let parsedSongs = [];
-        let selectedSongs = [];
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            const pageTitle = document.getElementById('page-title');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn'); // Hamburger/Close in header
+            const quickNavIcons = document.getElementById('quick-nav-icons');
+            const violationsKpiCard = document.getElementById('violations-kpi-card'); // Get the violations KPI div
 
-        const clientId = '11dbe168b3564e6cb3dacfc502915a71';
-        const redirectUri = 'https://playlister-dct.pages.dev/#';
-        const scopes = 'playlist-modify-public playlist-modify-private user-read-private';
+            // Record Hours Page Elements
+            const calendarGrid = document.getElementById('calendar-grid');
+            const currentMonthYearDisplay = document.getElementById('current-month-year');
+            const prevMonthBtn = document.getElementById('prev-month-btn');
+            const nextMonthBtn = document.getElementById('next-month-btn');
+            const editingHoursTitle = document.getElementById('editing-hours-title');
+            const futureDateMessage = document.getElementById('future-date-message'); // New element
+            const startTimeInput = document.getElementById('start-time');
+            const endTimeInput = document.getElementById('end-time');
+            const commentInput = document.getElementById('comment-input');
+            const addRestPeriodBtn = document.getElementById('add-rest-period-btn');
+            const restPeriodsList = document.getElementById('rest-periods-list');
+            const saveRecordBtn = document.getElementById('save-record-btn'); // Renamed
+            const signAndSendBtn = document.getElementById('sign-and-send-btn'); // New
+            const editWithReasonBtn = document.getElementById('edit-with-reason-btn'); // New
+            const inputFieldsContainer = document.querySelector('.input-fields-container'); // Container for edit fields
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check for auth token in URL
-            const hash = window.location.hash;
-            if (hash) {
-                const token = hash.split('&')[0].split('=')[1];
-                if (token) {
-                    accessToken = token;
-                    getUserProfile(token);
-                    window.location.hash = '';
-                }
-            }
+            const timelineChart = document.getElementById('timeline-chart');
+            const totalRestHoursDisplay = document.getElementById('total-rest-hours');
+            const totalWorkHoursDisplay = document.getElementById('total-work-hours');
 
-            // Set up event listeners
-            document.getElementById('auth-btn').addEventListener('click', authenticateSpotify);
-            document.getElementById('process-btn').addEventListener('click', processWithAI);
-            document.getElementById('create-playlist-btn').addEventListener('click', createPlaylist);
-        });
+            // My Records Page Elements
+            const myRecordsPage = document.getElementById('my-records-page');
+            const recordDetailsPage = document.getElementById('record-details-page');
+            const backToRecordsListBtn = document.getElementById('back-to-records-list');
+            const dailyRestBreakdownTbodyDetails = document.getElementById('daily-rest-breakdown-tbody-details');
+            const printPdfReportBtn = document.getElementById('print-pdf-report-btn');
+            const exportCsvReportBtn = document.getElementById('export-csv-report-btn');
 
-        function authenticateSpotify() {
-            const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
-            window.location.href = authUrl;
-        }
+            // Edit Reason Modal Elements
+            const editReasonModal = document.getElementById('edit-reason-modal');
+            const confirmEditReasonBtn = document.getElementById('confirm-edit-reason-btn');
+            const cancelEditReasonBtn = document.getElementById('cancel-edit-reason-btn');
+            const editCommentTextarea = document.getElementById('edit-comment-textarea');
+            const editReasonRadios = document.querySelectorAll('input[name="edit-reason"]');
+            const toastContainer = document.getElementById('toast-container');
 
-        async function getUserProfile(token) {
-            try {
-                const response = await fetch('https://api.spotify.com/v1/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
+            // Profile Page Elements
+            const profileNameInput = document.getElementById('profile-name');
+            const profilePositionInput = document.getElementById('profile-position');
+            const profileEmailInput = document.getElementById('profile-email');
+            const profileContactInput = document.getElementById('profile-contact');
+            const profileThemeSelect = document.getElementById('profile-theme');
+            const profileEditSaveBtn = document.getElementById('profile-edit-save-btn');
+            const profileCancelBtn = document.getElementById('profile-cancel-btn');
+            const profileUserTypeSelect = document.getElementById('profile-user-type'); // New
+            const profileScheduleTypeSelect = document.getElementById('profile-schedule-type'); // New
+
+            // Custom Schedule Elements
+            const customScheduleSection = document.getElementById('custom-schedule-section');
+            const customScheduleNameInput = document.getElementById('custom-schedule-name-input');
+            const customSchedulePeriodsList = document.getElementById('custom-schedule-periods-list');
+            const customStartTimeInput = document.getElementById('custom-start-time');
+            const customEndTimeInput = document.getElementById('custom-end-time');
+            const customCommentInput = document.getElementById('custom-comment-input');
+            const addCustomPeriodBtn = document.getElementById('add-custom-period-btn');
+            const saveCustomScheduleBtn = document.getElementById('save-custom-schedule-btn');
+
+            let currentCustomSchedulePeriods = []; // Temporary array for building custom schedule
+
+            // Profile Tabs
+            const profileTabs = document.querySelectorAll('.tabs .tab');
+            const personalSettingsTabContent = document.getElementById('personal-settings-tab');
+            const scheduleSettingsTabContent = document.getElementById('schedule-settings-tab');
+            const profileScheduleTimeline = document.getElementById('profile-schedule-timeline'); // New timeline for profile
+
+
+            // --- User Profile Data (simulated persistent storage) ---
+            let userProfileData = {
+                name: "John Smith",
+                position: "Deck Officer",
+                email: "john.smith@example.com",
+                contact: "+1 (555) 123-4567",
+                theme: "light",
+                userType: "", // Will store selected user type
+                scheduleType: "", // Will store selected schedule type
+                customSchedules: [] // New: to store custom schedules created by user
+            };
+
+            // Predefined schedules based on user type
+            const schedules = {
+                "Deck Officer": [
+                    { name: "8-on-16-off (Standard)", ranges: [
+                        { start: "00:00", end: "04:00", comment: "Morning Watch" },
+                        { start: "08:00", end: "12:00", comment: "Forenoon Watch" },
+                        { start: "16:00", end: "20:00", comment: "Evening Watch" }
+                    ]},
+                    { name: "6-on-6-off (Port)", ranges: [
+                        { start: "00:00", end: "06:00", comment: "Port Watch 1" },
+                        { start: "12:00", end: "18:00", comment: "Port Watch 2" }
+                    ]}
+                ],
+                "Engineer Officer": [
+                    { name: "Day Work (8-5)", ranges: [
+                        { start: "08:00", end: "17:00", comment: "Engine Room Day Work" }
+                    ]},
+                    { name: "3-on-9-off (Engine)", ranges: [
+                        { start: "00:00", end: "03:00", comment: "Engine Watch 1" },
+                        { start: "09:00", end: "12:00", comment: "Engine Watch 2" },
+                        { start: "18:00", end: "21:00", comment: "Engine Watch 3" }
+                    ]}
+                ],
+                "Rating": [
+                    { name: "General Duties (7-5)", ranges: [
+                        { start: "07:00", end: "12:00", comment: "Morning Duties" },
+                        { start: "13:00", end: "17:00", comment: "Afternoon Duties" }
+                    ]},
+                    { name: "Utility", ranges: [
+                        { start: "06:00", end: "10:00", comment: "Galley/Mess Duty" },
+                        { start: "14:00", end: "17:00", comment: "Maintenance Support" }
+                    ]}
+                ]
+            };
+
+
+            // --- Sidebar Toggle Logic ---
+            let isSidebarOpen = window.innerWidth >= 1024; // Sidebar open by default on larger screens
+
+            // Function to update sidebar visibility and button icon
+            const updateSidebarVisibility = () => {
+                if (isSidebarOpen) {
+                    sidebar.classList.remove('sidebar-hidden');
+                    sidebar.classList.add('sidebar-visible');
+                    // Change header toggle button to close icon
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.innerHTML = '<i class="fas fa-times text-xl"></i>';
+                        sidebarToggleBtn.classList.remove('hidden'); // Ensure it's visible on small
                     }
-                });
-                const data = await response.json();
-                userId = data.id;
-                showStep('input');
-            } catch (error) {
-                console.error('Error getting user profile:', error);
-                alert('Failed to authenticate with Spotify');
-            }
-        }
-
-        function addSongInput() {
-            const container = document.getElementById('songs-container');
-            const songInput = document.createElement('div');
-            songInput.className = 'song-input';
-            songInput.innerHTML = `
-                <input type="text" placeholder="e.g., 'Bohemian Rhapsody by Queen' or 'Ed Sheeran Shape of You'">
-                <button class="btn btn-danger" onclick="removeSongInput(this)">×</button>
-            `;
-            container.appendChild(songInput);
-        }
-
-        function removeSongInput(button) {
-            const container = document.getElementById('songs-container');
-            if (container.children.length > 1) {
-                button.parentElement.remove();
-            }
-        }
-
-        async function processWithAI() {
-            const playlistTitle = document.getElementById('playlist-title').value.trim();
-            const songInputs = document.querySelectorAll('#songs-container input');
-            
-            if (!playlistTitle) {
-                alert('Please enter a playlist title');
-                return;
-            }
-
-            const rawSongs = Array.from(songInputs)
-                .map(input => input.value.trim())
-                .filter(value => value !== '');
-
-            if (rawSongs.length === 0) {
-                alert('Please add at least one song');
-                return;
-            }
-
-            showStep('processing');
-
-            try {
-                // Use Claude AI to parse songs
-                const prompt = `Parse the following song entries into structured data. For each entry, extract the artist name and song title. Return ONLY a valid JSON array with objects containing "artist" and "song" fields.
-
-Songs to parse:
-${rawSongs.map((song, i) => `${i + 1}. ${song}`).join('\n')}
-
-Return format:
-[
-  {"artist": "Artist Name", "song": "Song Title"},
-  {"artist": "Artist Name", "song": "Song Title"}
-]
-
-IMPORTANT: Return ONLY the JSON array, no other text or formatting.`;
-
-                const aiResponse = await window.claude.complete(prompt);
-                parsedSongs = JSON.parse(aiResponse);
-
-                // Search for songs on Spotify
-                await searchSongsOnSpotify(parsedSongs);
-                
-            } catch (error) {
-                console.error('Error processing with AI:', error);
-                alert('Error processing songs with AI. Please try again.');
-                showStep('input');
-            }
-        }
-
-        async function searchSongsOnSpotify(songs) {
-            const results = [];
-            
-            for (const song of songs) {
-                try {
-                    const query = `track:"${song.song}" artist:"${song.artist}"`;
-                    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=1`, {
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`
-                        }
-                    });
-                    
-                    const data = await response.json();
-                    if (data.tracks.items.length > 0) {
-                        results.push({
-                            ...song,
-                            spotifyTrack: data.tracks.items[0],
-                            selected: true
-                        });
-                    } else {
-                        results.push({
-                            ...song,
-                            spotifyTrack: null,
-                            selected: false
-                        });
+                    // Hide quick nav icons when sidebar is open
+                    if (quickNavIcons) {
+                        quickNavIcons.classList.add('hidden');
                     }
-                } catch (error) {
-                    console.error('Error searching for song:', song, error);
-                    results.push({
-                        ...song,
-                        spotifyTrack: null,
-                        selected: false
-                    });
-                }
-            }
-
-            selectedSongs = results;
-            displayPreview(results);
-            showStep('preview');
-        }
-
-        function displayPreview(songs) {
-            const container = document.getElementById('playlist-preview');
-            container.innerHTML = '';
-
-            songs.forEach((song, index) => {
-                const songElement = document.createElement('div');
-                songElement.className = 'song-preview';
-                
-                if (song.spotifyTrack) {
-                    const track = song.spotifyTrack;
-                    const imageUrl = track.album.images[0]?.url || '';
-                    
-                    songElement.innerHTML = `
-                        ${imageUrl ? `<img src="${imageUrl}" alt="Album art">` : '<div style="width: 60px; height: 60px; background: #333; border-radius: 8px;"></div>'}
-                        <div class="song-info">
-                            <div class="song-title">${track.name}</div>
-                            <div class="song-artist">${track.artists.map(a => a.name).join(', ')}</div>
-                        </div>
-                        <div class="preview-actions">
-                            ${track.preview_url ? `<button class="btn btn-secondary" onclick="playPreview('${track.preview_url}')">▶</button>` : ''}
-                            <button class="btn ${song.selected ? 'btn-danger' : 'btn-secondary'}" onclick="toggleSong(${index})">
-                                ${song.selected ? '✓ Added' : '+ Add'}
-                            </button>
-                        </div>
-                    `;
                 } else {
-                    songElement.innerHTML = `
-                        <div style="width: 60px; height: 60px; background: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center;">❌</div>
-                        <div class="song-info">
-                            <div class="song-title">${song.song}</div>
-                            <div class="song-artist">${song.artist} (Not found on Spotify)</div>
+                    sidebar.classList.remove('sidebar-visible');
+                    sidebar.classList.add('sidebar-hidden');
+                    // Change header toggle button to menu icon
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+                        sidebarToggleBtn.classList.remove('hidden'); // Ensure it's visible on small
+                    }
+                    // Show quick nav icons only on small screens when sidebar is closed
+                    if (quickNavIcons && window.innerWidth < 1024) {
+                        quickNavIcons.classList.remove('hidden'); // Make sure it's not hidden
+                    } else if (quickNavIcons) {
+                        quickNavIcons.classList.add('hidden'); // Hide on large screens
+                    }
+                }
+            };
+
+            const toggleSidebar = () => {
+                isSidebarOpen = !isSidebarOpen;
+                updateSidebarVisibility();
+            };
+
+            // Initial setup for sidebar visibility and button state
+            updateSidebarVisibility();
+
+            // Event listener for the header hamburger button (opens/closes sidebar)
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', toggleSidebar);
+            }
+
+            // Close sidebar when clicking outside on small screens
+            document.addEventListener('click', (e) => {
+                const isClickInsideSidebar = sidebar.contains(e.target);
+                const isClickOnToggleButton = sidebarToggleBtn && sidebarToggleBtn.contains(e.target);
+                const isClickOnNavLink = e.target.closest('.nav-link'); // Check if click is on a nav link
+                const isClickOnQuickNavLink = e.target.closest('.quick-nav-link'); // Check if click is on a quick nav link
+                const isClickInsideModal = editReasonModal && editReasonModal.contains(e.target); // Check if click is inside modal
+
+                // Close if click is outside sidebar, not on toggle button, not on any nav link, and sidebar is open on small screen
+                if (window.innerWidth < 1024 && isSidebarOpen && !isClickInsideSidebar && !isClickOnToggleButton && !isClickOnNavLink && !isClickOnQuickNavLink && !isClickInsideModal) {
+                    toggleSidebar();
+                }
+            });
+
+            // Handle resize: force sidebar open on large screens, and update button state
+            window.addEventListener('resize', () => {
+                const wasSidebarOpen = isSidebarOpen; // Capture current state before calculation
+                isSidebarOpen = window.innerWidth >= 1024; // Directly set state based on current width
+                // If it was open (from large screen resize), set it to false for small screen when resized down
+                if (window.innerWidth < 1024 && wasSidebarOpen && sidebar.classList.contains('sidebar-visible')) {
+                    isSidebarOpen = false; // Force close it on resize down if it was open due to large screen
+                }
+                updateSidebarVisibility(); // Update sidebar and quickNavIcons visibility
+            });
+
+
+            // --- Page Navigation Logic ---
+            const setActivePage = (targetId) => {
+                // Remove active class from all nav links and hide all pages
+                navLinks.forEach(link => link.classList.remove('active', 'bg-blue-100', 'text-blue-800'));
+                pageContents.forEach(page => page.classList.add('hidden'));
+
+                // Add active class to the clicked nav link
+                const activeLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active', 'bg-blue-100', 'text-blue-800');
+                }
+
+                // Show the target page
+                const targetPage = document.getElementById(targetId);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    // Update page title based on the selected page
+                    pageTitle.textContent = activeLink ? activeLink.textContent.trim().replace(/^(.*?)\s/, '') : 'Dashboard'; // Removes icon text
+
+                    // Special handling for Record Details Page title if navigated directly
+                    if (targetId === 'record-details-page') {
+                        pageTitle.textContent = 'Record Details';
+                    }
+                }
+                // Update active state for quick nav links
+                document.querySelectorAll('.quick-nav-link').forEach(link => {
+                    if (link.dataset.target === targetId) {
+                        link.classList.add('text-primary'); // Highlight active quick nav icon
+                        link.classList.remove('text-white');
+                    } else {
+                        link.classList.remove('text-primary');
+                        link.classList.add('text-white');
+                    }
+                });
+
+                // Close sidebar after navigation on small screens
+                if (window.innerWidth < 1024 && isSidebarOpen) {
+                    toggleSidebar();
+                }
+
+                // Re-render calendar and timeline when navigating to Record Hours page
+                if (targetId === 'record-hours-page') {
+                    renderCalendar(currentYear, currentMonth);
+                    loadRestPeriodsForSelectedDate();
+                    updateTimeline();
+                }
+
+                // Handle Profile page state
+                if (targetId === 'profile-page') {
+                    setProfileEditMode(false); // Always start in view mode
+                    // Ensure the correct tab is shown when navigating to Profile
+                    switchProfileTab('personal-settings-tab');
+                }
+            };
+
+            // Event listener for navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent default link behavior
+                    const targetId = e.currentTarget.dataset.target;
+                    setActivePage(targetId);
+                });
+            });
+
+            // Event listener for quick nav icons
+            document.querySelectorAll('.quick-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.currentTarget.dataset.target;
+                    setActivePage(targetId);
+                });
+            });
+
+
+            // Set initial active page to Dashboard on load
+            setActivePage('dashboard-page');
+
+            // --- Toast Notification Function ---
+            const showToast = (message, duration = 3000) => {
+                const toastItem = document.createElement('div');
+                toastItem.classList.add('toast-item');
+                toastItem.textContent = message;
+                toastContainer.appendChild(toastItem);
+
+                // Force reflow to ensure transition plays
+                void toastItem.offsetWidth;
+
+                toastItem.classList.add('show');
+
+                setTimeout(() => {
+                    toastItem.classList.remove('show');
+                    toastItem.addEventListener('transitionend', () => {
+                        toastItem.remove();
+                    }, { once: true });
+                }, duration);
+            };
+
+
+            // --- Record Hours Page Logic (adapted for new buttons) ---
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            let selectedDate = new Date(); // Represents the currently selected date in the calendar
+
+            // Simulate storage for daily records, keyed by ISO-YYYY-MM-DD
+            // Each entry will be { restPeriods: [], isSignedAndSent: boolean, editReason: string | null }
+            const dailyRecords = {};
+
+            // Helper to get date string for key
+            const getDateString = (date) => date.toISOString().split('T')[0];
+
+            // Initialize current day's data if not present
+            const initDailyRecord = (date) => {
+                const dateString = getDateString(date);
+                if (!dailyRecords[dateString]) {
+                    dailyRecords[dateString] = {
+                        restPeriods: [],
+                        isSignedAndSent: false,
+                        editReason: null,
+                        lastModified: new Date().toISOString()
+                    };
+                }
+            };
+            initDailyRecord(selectedDate); // Initialize for today
+
+
+            // Function to update the state of the input fields and buttons based on signed status
+            const updateRecordHoursUIState = () => {
+                const recordForSelectedDate = dailyRecords[getDateString(selectedDate)];
+                const isSigned = recordForSelectedDate && recordForSelectedDate.isSignedAndSent;
+
+                // Toggle visibility of save/sign vs. edit button
+                if (saveRecordBtn) saveRecordBtn.classList.toggle('hidden', isSigned);
+                if (signAndSendBtn) signAndSendBtn.classList.toggle('hidden', isSigned);
+                if (editWithReasonBtn) editWithReasonBtn.classList.toggle('hidden', !isSigned);
+
+                // Disable/enable input fields
+                const inputsDisabled = isSigned;
+                if (startTimeInput) startTimeInput.disabled = inputsDisabled;
+                if (endTimeInput) endTimeInput.disabled = inputsDisabled;
+                if (commentInput) commentInput.disabled = inputsDisabled;
+                if (addRestPeriodBtn) addRestPeriodBtn.disabled = inputsDisabled;
+
+                // Disable/enable edit/delete buttons on existing rest periods
+                document.querySelectorAll('#rest-periods-list .edit-period-btn, #rest-periods-list .delete-period-btn').forEach(btn => {
+                    btn.disabled = inputsDisabled;
+                });
+
+                // Handle future date message and disablement
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Normalize today to start of day
+                const selectedDay = new Date(selectedDate);
+                selectedDay.setHours(0, 0, 0, 0); // Normalize selectedDate to start of day
+
+                if (selectedDay > today) {
+                    if (futureDateMessage) futureDateMessage.classList.remove('hidden');
+                    if (addRestPeriodBtn) addRestPeriodBtn.disabled = true;
+                    if (saveRecordBtn) saveRecordBtn.classList.add('hidden');
+                    if (signAndSendBtn) signAndSendBtn.classList.add('hidden');
+                    if (editWithReasonBtn) editWithReasonBtn.classList.add('hidden'); // No editing future records
+                    if (startTimeInput) startTimeInput.disabled = true;
+                    if (endTimeInput) endTimeInput.disabled = true;
+                    if (commentInput) commentInput.disabled = true;
+                } else {
+                    if (futureDateMessage) futureDateMessage.classList.add('hidden');
+                    // Re-enable if it's today or past and not signed, as it might have been disabled by previous future date selection
+                    if (!isSigned) {
+                        if (startTimeInput) startTimeInput.disabled = false;
+                        if (endTimeInput) endTimeInput.disabled = false;
+                        if (commentInput) commentInput.disabled = false;
+                        if (addRestPeriodBtn) addRestPeriodBtn.disabled = false;
+                        if (saveRecordBtn) saveRecordBtn.classList.remove('hidden');
+                        if (signAndSendBtn) signAndSendBtn.classList.remove('hidden');
+                    }
+                }
+            };
+
+
+            // Function to calculate duration between two times in hours
+            const calculateDuration = (start, end) => {
+                const [startHour, startMinute] = start.split(':').map(Number);
+                const [endHour, endMinute] = end.split(':').map(Number);
+
+                let totalMinutes = (endHour * 60 + endMinute) - (startHour * 60 + startMinute);
+                if (totalMinutes < 0) { // Handle overnight periods
+                    totalMinutes += 24 * 60;
+                }
+                return totalMinutes / 60;
+            };
+
+            // Function to render the calendar
+            const renderCalendar = (year, month) => {
+                if (!calendarGrid) return; // Defensive check
+                calendarGrid.innerHTML = `
+                    <div class="text-xs font-semibold text-base-content-secondary">Sun</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Mon</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Tue</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Wed</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Thu</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Fri</div>
+                    <div class="text-xs font-semibold text-base-content-secondary">Sat</div>
+                `; // Reset grid, keep headers
+
+                if (currentMonthYearDisplay) {
+                    currentMonthYearDisplay.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+                }
+
+                const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 for Sunday, 6 for Saturday
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+                // Fill in leading empty days (from previous month)
+                for (let i = firstDayOfMonth; i > 0; i--) {
+                    const day = document.createElement('div');
+                    day.classList.add('text-base-content-secondary', 'opacity-50', 'p-2', 'cursor-not-allowed');
+                    day.textContent = daysInPrevMonth - i + 1;
+                    calendarGrid.appendChild(day);
+                }
+
+                // Fill in days of the current month
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const day = document.createElement('div');
+                    day.classList.add('p-2', 'border', 'rounded-lg', 'hover:bg-base-200', 'cursor-pointer', 'calendar-day');
+                    day.textContent = i;
+                    day.dataset.date = i;
+                    day.dataset.month = month + 1; // 1-indexed month
+                    day.dataset.year = year;
+
+                    // Add visual indicator for days with data or signed status (simulated)
+                    const dateToCheck = new Date(year, month, i);
+                    const record = dailyRecords[getDateString(dateToCheck)];
+                    if (record && (record.restPeriods.length > 0 || record.isSignedAndSent)) {
+                        day.classList.add('bg-blue-100', 'text-blue-800'); // Indicate data/signed
+                    }
+
+                    if (i === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear()) {
+                        day.classList.add('bg-blue-200', 'text-blue-800', 'font-bold', 'transition-colors', 'duration-200');
+                    }
+
+                    day.addEventListener('click', () => {
+                        document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('bg-blue-200', 'text-blue-800', 'font-bold'));
+                        day.classList.add('bg-blue-200', 'text-blue-800', 'font-bold');
+                        selectedDate = new Date(year, month, i);
+                        initDailyRecord(selectedDate); // Ensure record exists for selected day
+                        if (editingHoursTitle) {
+                            editingHoursTitle.textContent = `Editing Hours for ${selectedDate.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+                        }
+                        loadRestPeriodsForSelectedDate();
+                        updateTimeline();
+                        updateRecordHoursUIState(); // Update UI state for new selected date
+                    });
+                    calendarGrid.appendChild(day);
+                }
+
+                // Fill in trailing empty days (from next month)
+                const totalCells = firstDayOfMonth + daysInMonth;
+                const remainingCells = 42 - totalCells; // Max 6 rows * 7 days = 42 cells
+                for (let i = 1; i <= remainingCells; i++) {
+                    const day = document.createElement('div');
+                    day.classList.add('text-base-content-secondary', 'opacity-50', 'p-2', 'cursor-not-allowed');
+                    day.textContent = i;
+                    calendarGrid.appendChild(day);
+                }
+            };
+
+            // Function to load rest periods for the selected date, applying schedule if applicable
+            const loadRestPeriodsForSelectedDate = () => {
+                const record = dailyRecords[getDateString(selectedDate)];
+                restPeriods = record ? [...record.restPeriods] : []; // Load a copy
+
+                const today = new Date();
+                const selectedDayStart = new Date(selectedDate);
+                selectedDayStart.setHours(0, 0, 0, 0);
+                const todayStart = new Date(today);
+                todayStart.setHours(0, 0, 0, 0);
+
+                // --- Apply Schedule Pre-population Logic ---
+                // Only apply schedule if not already populated for the day and it's today or a past day
+                if (userProfileData.scheduleType && restPeriods.length === 0 && selectedDayStart <= todayStart) {
+                    const selectedUserTypeSchedules = schedules[userProfileData.userType];
+                    let selectedSchedule = null;
+
+                    if (selectedUserTypeSchedules) {
+                        selectedSchedule = selectedUserTypeSchedules.find(s => s.name === userProfileData.scheduleType);
+                    }
+                    
+                    // Check custom schedules if not found in predefined
+                    if (!selectedSchedule && userProfileData.customSchedules) {
+                         selectedSchedule = userProfileData.customSchedules.find(s => s.name === userProfileData.scheduleType);
+                    }
+
+                    if (selectedSchedule) {
+                        const newPeriods = [];
+                        selectedSchedule.ranges.forEach(range => {
+                            // Create Date objects for comparison on the selected day
+                            const periodStartDate = new Date(selectedDate);
+                            periodStartDate.setHours(parseInt(range.start.split(':')[0]), parseInt(range.start.split(':')[1]), 0, 0);
+
+                            const periodEndDate = new Date(selectedDate);
+                            periodEndDate.setHours(parseInt(range.end.split(':')[0]), parseInt(range.end.split(':')[1]), 0, 0);
+
+                            // Only pre-populate if the *entire* rest period has elapsed if it's today
+                            // Or if it's a past day, pre-populate all periods
+                            if (selectedDayStart.toDateString() === todayStart.toDateString()) { // If selected date is today
+                                if (periodEndDate <= today) { // If the period's end time has passed
+                                    newPeriods.push({ ...range }); // Add the range
+                                }
+                            } else if (selectedDayStart < todayStart) { // If selected date is in the past
+                                newPeriods.push({ ...range }); // Add all ranges
+                            }
+                        });
+                        restPeriods = newPeriods;
+                        dailyRecords[getDateString(selectedDate)].restPeriods = restPeriods; // Save the prepopulated periods
+                    }
+                }
+                // End Apply Schedule Logic
+
+                renderRestPeriods();
+                updateRecordHoursUIState(); // Update UI state after loading periods
+            };
+
+            // Function to render rest periods in the list
+            const renderRestPeriods = () => {
+                if (!restPeriodsList) return; // Defensive check
+                restPeriodsList.innerHTML = '';
+                let totalRestDuration = 0;
+                restPeriods.forEach((period, index) => {
+                    const duration = calculateDuration(period.start, period.end);
+                    totalRestDuration += duration;
+
+                    const periodDiv = document.createElement('div');
+                    periodDiv.classList.add('flex', 'justify-between', 'items-center', 'p-3', 'bg-base-200', 'rounded-lg');
+                    periodDiv.innerHTML = `
+                        <div>
+                            <div class="font-medium text-base-content">${period.start} - ${period.end}</div>
+                            <div class="text-sm text-base-content-secondary">${duration.toFixed(1)} hours</div>
+                            ${period.comment ? `<div class="text-xs text-base-content-secondary italic mt-1">Comment: ${period.comment}</div>` : ''}
+                        </div>
+                        <div class="space-x-2">
+                            <button class="btn btn-ghost btn-xs text-info rounded-lg edit-period-btn" data-index="${index}">Edit</button>
+                            <button class="btn btn-ghost btn-xs text-error rounded-lg delete-period-btn" data-index="${index}">Delete</button>
                         </div>
                     `;
+                    restPeriodsList.appendChild(periodDiv);
+                });
+
+                // Add event listeners for edit/delete buttons
+                document.querySelectorAll('.edit-period-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.currentTarget.dataset.index);
+                        const periodToEdit = restPeriods[index];
+                        if (startTimeInput) startTimeInput.value = periodToEdit.start;
+                        if (endTimeInput) endTimeInput.value = periodToEdit.end;
+                        if (commentInput) commentInput.value = periodToEdit.comment || ''; // Populate comment input
+                        // Remove the period from the list as it's now being edited/replaced
+                        restPeriods.splice(index, 1);
+                        renderRestPeriods();
+                        updateTimeline();
+                        updateRecordHoursUIState(); // Re-evaluate UI state after edit
+                    });
+                });
+
+                document.querySelectorAll('.delete-period-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.currentTarget.dataset.index);
+                        restPeriods.splice(index, 1);
+                        renderRestPeriods();
+                        updateTimeline();
+                        updateRecordHoursUIState(); // Re-evaluate UI state after delete
+                    });
+                });
+
+                if (totalRestHoursDisplay) totalRestHoursDisplay.textContent = `${totalRestDuration.toFixed(1)} hours`;
+                if (totalWorkHoursDisplay) totalWorkHoursDisplay.textContent = `${(24 - totalRestDuration).toFixed(1)} hours`;
+            };
+
+            // Function to update the 24-hour timeline chart
+            const updateTimeline = () => {
+                if (!timelineChart) return; // Defensive check
+                timelineChart.innerHTML = ''; // Clear existing segments
+
+                // Sort rest periods by start time
+                restPeriods.sort((a, b) => {
+                    const [ha, ma] = a.start.split(':').map(Number);
+                    const [hb, mb] = b.start.split(':').map(Number);
+                    if (ha !== hb) return ha - hb;
+                    return ma - mb;
+                });
+
+                let currentTime = 0; // In hours from 00:00
+
+                restPeriods.forEach(period => {
+                    const startHour = parseFloat(period.start.split(':')[0]) + parseFloat(period.start.split(':')[1]) / 60;
+                    const endHour = parseFloat(period.end.split(':')[0]) + parseFloat(period.end.split(':')[1]) / 60;
+                    let duration = endHour - startHour;
+                    if (duration < 0) duration += 24; // Handle overnight periods
+
+                    // Add work period if there's a gap
+                    if (startHour > currentTime) {
+                        const workDuration = startHour - currentTime;
+                        const workWidth = (workDuration / 24) * 100;
+                        const workLeft = (currentTime / 24) * 100;
+                        const workDiv = document.createElement('div');
+                        workDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg'); /* Added rounded-lg */
+                        workDiv.style.left = `${workLeft}%`;
+                        workDiv.style.width = `${workWidth}%`;
+                        timelineChart.appendChild(workDiv);
+                    }
+
+                    // Add rest period
+                    const restWidth = (duration / 24) * 100;
+                    const restLeft = (startHour / 24) * 100;
+                    const restDiv = document.createElement('div');
+                    restDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-green-500', 'rounded-lg');
+                    restDiv.style.left = `${restLeft}%`;
+                    restDiv.style.width = `${restWidth}%`;
+                    timelineChart.appendChild(restDiv);
+
+                    currentTime = endHour;
+                    if (currentTime >= 24) currentTime -= 24; // Reset for next day if passed midnight
+                });
+
+                // Add remaining work period until end of day if any
+                if (currentTime < 24 && restPeriods.length > 0) {
+                    const lastPeriodEndHour = parseFloat(restPeriods[restPeriods.length - 1].end.split(':')[0]) + parseFloat(restPeriods[restPeriods.length - 1].end.split(':')[1]) / 60;
+                    if (lastPeriodEndHour < 24) { // Only if the last period doesn't extend past midnight
+                        const workDuration = 24 - lastPeriodEndHour;
+                        const workWidth = (workDuration / 24) * 100;
+                        const workLeft = (lastPeriodEndHour / 24) * 100;
+                        const workDiv = document.createElement('div');
+                        workDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg'); /* Added rounded-lg */
+                        workDiv.style.left = `${workLeft}%`;
+                        workDiv.style.width = `${workWidth}%`;
+                        timelineChart.appendChild(workDiv);
+                    }
+                }
+                 // Handle the case where there are no rest periods
+                if (restPeriods.length === 0) {
+                    const fullDayWorkDiv = document.createElement('div');
+                    fullDayWorkDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg'); /* Added rounded-lg */
+                    fullDayWorkDiv.style.left = '0%';
+                    fullDayWorkDiv.style.width = '100%';
+                    timelineChart.appendChild(fullDayWorkDiv);
+                }
+            };
+
+            // Save Record Button
+            if (saveRecordBtn) {
+                saveRecordBtn.addEventListener('click', () => {
+                    dailyRecords[getDateString(selectedDate)].restPeriods = [...restPeriods];
+                    dailyRecords[getDateString(selectedDate)].lastModified = new Date().toISOString();
+                    showToast('Record saved successfully!');
+                    console.log('Saved rest periods for:', selectedDate.toDateString(), dailyRecords[getDateString(selectedDate)]);
+                });
+            }
+
+            // Sign & Send Button
+            if (signAndSendBtn) {
+                signAndSendBtn.addEventListener('click', () => {
+                    dailyRecords[getDateString(selectedDate)].restPeriods = [...restPeriods]; // Save current edits before signing
+                    dailyRecords[getDateString(selectedDate)].isSignedAndSent = true;
+                    dailyRecords[getDateString(selectedDate)].lastModified = new Date().toISOString();
+                    dailyRecords[getDateString(selectedDate)].signedDate = new Date().toISOString(); // Simulate signed date
+                    showToast('Record Signed and Sent!');
+                    console.log('Signed and sent record for:', selectedDate.toDateString(), dailyRecords[getDateString(selectedDate)]);
+                    updateRecordHoursUIState(); // Update UI to view-only
+                });
+            }
+
+            // Edit with Reason Button
+            if (editWithReasonBtn) {
+                editWithReasonBtn.addEventListener('click', () => {
+                    editReasonModal.showModal();
+                    // Reset radio buttons and textarea
+                    editReasonRadios[0].checked = true; // Select first option by default
+                    editCommentTextarea.classList.add('hidden'); // Hide comment area initially
+                    editCommentTextarea.value = ''; // Clear any previous comment
+                });
+            }
+
+            // Edit Reason Modal Logic
+            editReasonRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.value === 'Edit with comments') {
+                        editCommentTextarea.classList.remove('hidden');
+                    } else {
+                        editCommentTextarea.classList.add('hidden');
+                    }
+                });
+            });
+
+            if (confirmEditReasonBtn) {
+                confirmEditReasonBtn.addEventListener('click', () => {
+                    const selectedReason = document.querySelector('input[name="edit-reason"]:checked').value;
+                    const comment = editCommentTextarea.value.trim();
+
+                    const record = dailyRecords[getDateString(selectedDate)];
+                    record.isSignedAndSent = false; // Allow editing again
+                    record.editReason = comment ? `${selectedReason}: ${comment}` : selectedReason;
+                    record.lastModified = new Date().toISOString(); // Update last modified
+                    record.signedDate = null; // Clear signed date if re-editing
+
+                    showToast('Record is now editable with reason.');
+                    console.log('Record unlocked for editing:', record);
+                    editReasonModal.close();
+                    updateRecordHoursUIState(); // Re-enable editing fields
+                });
+            }
+
+            if (cancelEditReasonBtn) {
+                cancelEditReasonBtn.addEventListener('click', () => {
+                    editReasonModal.close();
+                });
+            }
+
+
+            if (addRestPeriodBtn) {
+                addRestPeriodBtn.addEventListener('click', () => {
+                    const start = startTimeInput ? startTimeInput.value : '';
+                    const end = endTimeInput ? endTimeInput.value : '';
+                    const comment = commentInput ? commentInput.value.trim() : ''; // Get comment
+
+                    if (!start || !end) {
+                        showToast('Please enter both start and end times.', 2000);
+                        return;
+                    }
+
+                    const today = new Date();
+                    const selectedDay = new Date(selectedDate);
+                    selectedDay.setHours(0, 0, 0, 0); // Normalize to start of day
+
+                    const periodStartDate = new Date(selectedDate);
+                    periodStartDate.setHours(parseInt(start.split(':')[0]), parseInt(start.split(':')[1]), 0, 0);
+
+                    const periodEndDate = new Date(selectedDate);
+                    periodEndDate.setHours(parseInt(end.split(':')[0]), parseInt(end.split(':')[1]), 0, 0);
+
+                    // Prevent adding periods for future dates
+                    if (selectedDay > today) {
+                        showToast('Cannot add rest periods for future dates.', 3000);
+                        return;
+                    }
+                    // Prevent adding periods for future times on the current day
+                    if (selectedDay.toDateString() === today.toDateString()) {
+                        if (periodStartDate > today || periodEndDate > today) {
+                            showToast('Cannot add rest periods for future times on the current day.', 3000);
+                            return;
+                        }
+                    }
+
+                    restPeriods.push({ start, end, comment }); // Store comment
+                    renderRestPeriods();
+                    updateTimeline();
+                    if (startTimeInput) startTimeInput.value = '00:00'; // Reset inputs
+                    if (endTimeInput) endTimeInput.value = '00:00';
+                    if (commentInput) commentInput.value = ''; // Clear comment input
+                    updateRecordHoursUIState(); // Re-evaluate UI state after adding
+                });
+            }
+
+
+            if (prevMonthBtn) {
+                prevMonthBtn.addEventListener('click', () => {
+                    currentMonth--;
+                    if (currentMonth < 0) {
+                        currentMonth = 11;
+                        currentYear--;
+                    }
+                    renderCalendar(currentYear, currentMonth);
+                    loadRestPeriodsForSelectedDate(); // Refresh periods based on new month/year
+                    updateTimeline();
+                });
+            }
+
+
+            if (nextMonthBtn) {
+                nextMonthBtn.addEventListener('click', () => {
+                    currentMonth++;
+                    if (currentMonth > 11) {
+                        currentMonth = 0;
+                        currentYear++;
+                    }
+                    renderCalendar(currentYear, currentMonth);
+                    loadRestPeriodsForSelectedDate(); // Refresh periods based on new month/year
+                    updateTimeline();
+                });
+            }
+
+
+            // --- Dashboard and My Records Pages (existing logic) ---
+            const continueRecordingBtn = document.getElementById('continue-recording-btn');
+            if (continueRecordingBtn) {
+                continueRecordingBtn.addEventListener('click', () => {
+                    setActivePage('record-hours-page');
+                });
+            }
+
+            const editTodayHoursBtn = document.getElementById('edit-today-hours-btn');
+            if (editTodayHoursBtn) {
+                editTodayHoursBtn.addEventListener('click', () => {
+                    setActivePage('record-hours-page');
+                    // Optionally pre-select today's date in the calendar or focus on today's entry
+                    const today = new Date();
+                    const todayFormatted = today.getDate();
+                    const currentMonth = today.toLocaleString('default', { month: 'long' });
+                    const currentYear = today.getFullYear();
+                    const currentMonthYearElement = document.getElementById('current-month-year');
+                    if (currentMonthYearElement) {
+                         currentMonthYearElement.textContent = `${currentMonth} ${currentYear}`;
+                    }
+                    renderCalendar(today.getFullYear(), today.getMonth());
+                    // Simulate selecting today by adding 'selected' class
+                    const todayElement = document.querySelector(`.calendar-day[data-date="${todayFormatted}"][data-month="${today.getMonth() + 1}"]`);
+                    if (todayElement) {
+                        document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('bg-blue-200', 'text-blue-800', 'font-bold'));
+                        todayElement.classList.add('bg-blue-200', 'text-blue-800', 'font-bold');
+                        const editingHoursTitleElement = document.getElementById('editing-hours-title');
+                        if (editingHoursTitleElement) {
+                             editingHoursTitleElement.textContent = `Editing Hours for ${today.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+                        }
+                    }
+                });
+            }
+
+            // Violations KPI button functionality
+            if (violationsKpiCard) { // Changed to violationsKpiCard
+                violationsKpiCard.addEventListener('click', () => {
+                    setActivePage('my-records-page');
+                    // In a real app, you'd then filter the records table to show only violations.
+                    // For this example, it just navigates to the page.
+                    showToast('Navigating to My Records to view violations.', 3000);
+                });
+            }
+
+
+            const acknowledgeMayRecordBtn = document.getElementById('acknowledge-may-record-btn');
+            if (acknowledgeMayRecordBtn) {
+                acknowledgeMayRecordBtn.addEventListener('click', () => {
+                    const maySignatureStatus = document.getElementById('may-signature-status');
+                    if (maySignatureStatus) {
+                        maySignatureStatus.innerHTML = '<i class="fas fa-check text-success mr-1"></i>Signed';
+                    }
+                    // Update the recordData for May 2025 to reflect the signature
+                    if (recordData.may2025) {
+                        recordData.may2025.seafarerSignatureDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                        recordData.may2025.overallStatus = 'Signed & Completed';
+                    }
+                    if (e.target) { // Check if target exists before attempting to remove
+                        e.target.remove(); // Remove the sign button after clicking
+                    }
+                    console.log('May 2025 record acknowledged!');
+                });
+            }
+
+
+            // Sample data for record details
+            const recordData = {
+                june2025: {
+                    title: 'June 2025 Rest Hours Record',
+                    overallStatus: 'Signed & Completed',
+                    daysRecorded: 30, // Changed to number for calculation
+                    complianceRate: '100 %',
+                    totalRest: 360, // Changed to number for calculation
+                    averageDailyRest: 12, // Changed to number for calculation
+                    masterSignatureDate: 'June 30, 2025',
+                    seafarerSignatureDate: 'July 1, 2025',
+                    dailyBreakdown: [
+                        { date: 'June 1, 2025', dayOfWeek: 'Monday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Day 1 activities.' },
+                        { date: 'June 2, 2025', dayOfWeek: 'Tuesday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Morning watch.' },
+                        { date: 'June 3, 2025', dayOfWeek: 'Wednesday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Long day on deck.' },
+                        { date: 'June 4, 2025', dayOfWeek: 'Thursday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Routine maintenance.' },
+                        { date: 'June 5, 2025', dayOfWeek: 'Friday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Port arrival.' },
+                        { date: 'June 6, 2025', dayOfWeek: 'Saturday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Cargo operations.' },
+                        { date: 'June 7, 2025', dayOfWeek: 'Sunday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Off duty.' },
+                        { date: 'June 8, 2025', dayOfWeek: 'Monday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Paperwork.' },
+                        { date: 'June 9, 2025', dayOfWeek: 'Tuesday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Drills conducted.' },
+                        { date: 'June 10, 2025', dayOfWeek: 'Wednesday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Engine room checks.' },
+                        { date: 'June 11, 2025', dayOfWeek: 'Thursday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Navigation.' },
+                        { date: 'June 12, 2025', dayOfWeek: 'Friday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Cleaning duty.' },
+                        { date: 'June 13, 2025', dayOfWeek: 'Saturday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Weekend watch.' },
+                        { date: 'June 14, 2025', dayOfWeek: 'Sunday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Violated', comment: 'Emergency drill, disturbed rest.' }, // Example violation
+                        { date: 'June 15, 2025', dayOfWeek: 'Monday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Repair work.' },
+                        { date: 'June 16, 2025', dayOfWeek: 'Tuesday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Regular watch.' },
+                        { date: 'June 17, 2025', dayOfWeek: 'Wednesday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Daily tasks.' },
+                    ]
+                },
+                may2025: {
+                    title: 'May 2025 Rest Hours Record',
+                    overallStatus: 'Awaiting My Signature',
+                    daysRecorded: 31, // Changed to number for calculation
+                    complianceRate: '98 %',
+                    totalRest: 350, // Changed to number for calculation
+                    averageDailyRest: 11.3, // Changed to number for calculation
+                    masterSignatureDate: 'June 1, 2025',
+                    seafarerSignatureDate: 'Pending',
+                    dailyBreakdown: [
+                        { date: 'May 1, 2025', dayOfWeek: 'Thursday', periods: ['00:00-06:00 (6h)', '14:00-20:00 (6h)'], totalHours: '12 hours', sevenDayTotal: '84 hours', status: 'Compliant', comment: 'Routine day.' },
+                        { date: 'May 2, 2025', dayOfWeek: 'Friday', periods: ['23:00-05:00 (6h)', '12:00-17:00 (5h)'], totalHours: '11 hours', sevenDayTotal: '83 hours', status: 'Compliant', comment: 'Deck cleaning.' },
+                        { date: 'May 3, 2025', dayOfWeek: 'Saturday', periods: ['01:00-07:00 (6h)', '15:00-22:00 (7h)'], totalHours: '13 hours', sevenDayTotal: '85 hours', status: 'Compliant', comment: 'Port stay.' },
+                    ]
+                }
+            };
+            let currentRecordId = null; // To store the ID of the currently viewed record
+
+            document.querySelectorAll('.view-record-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const recordId = e.currentTarget.dataset.recordId;
+                    const record = recordData[recordId];
+                    currentRecordId = recordId; // Set current record ID
+
+                    if (record) {
+                        // Populate record details
+                        const recordDetailsTitle = document.getElementById('record-details-title');
+                        if (recordDetailsTitle) recordDetailsTitle.textContent = `${record.title} Details`;
+                        const recordDetailsStatusTitle = document.getElementById('record-details-status-title');
+                        if (recordDetailsStatusTitle) recordDetailsStatusTitle.textContent = record.title;
+                        const recordDetailsOverallStatus = document.getElementById('record-details-overall-status');
+                        if (recordDetailsOverallStatus) recordDetailsOverallStatus.textContent = record.overallStatus;
+                        // Adjust badge color based on status
+                        if (record.overallStatus.includes('Awaiting')) {
+                             recordDetailsOverallStatus.classList.remove('badge-success');
+                             recordDetailsOverallStatus.classList.add('badge-warning');
+                        } else {
+                             recordDetailsOverallStatus.classList.remove('badge-warning');
+                             recordDetailsOverallStatus.classList.add('badge-success');
+                        }
+
+                        const recordDaysRecorded = document.getElementById('record-days-recorded');
+                        if (recordDaysRecorded) recordDaysRecorded.textContent = record.daysRecorded;
+                        const recordComplianceRate = document.getElementById('record-compliance-rate');
+                        if (recordComplianceRate) recordComplianceRate.textContent = record.complianceRate;
+                        const recordTotalRest = document.getElementById('record-total-rest');
+                        if (recordTotalRest) recordTotalRest.textContent = record.totalRest;
+                        const recordAverageDailyRest = document.getElementById('record-average-daily-rest');
+                        if (recordAverageDailyRest) recordAverageDailyRest.textContent = record.averageDailyRest;
+
+                        const recordTotalWork = document.getElementById('record-total-work');
+                        if (recordTotalWork) {
+                            const totalWorkHoursValue = (record.daysRecorded * 24) - record.totalRest;
+                            recordTotalWork.textContent = `${totalWorkHoursValue.toFixed(1)} hours`;
+                        }
+
+                        const masterSignatureDate = document.getElementById('master-signature-date');
+                        if (masterSignatureDate) masterSignatureDate.textContent = record.masterSignatureDate;
+                        const seafarerSignatureDate = document.getElementById('seafarer-signature-date');
+                        if (seafarerSignatureDate) seafarerSignatureDate.textContent = record.seafarerSignatureDate;
+
+
+                        // Clear existing breakdown and add new
+                        if (dailyRestBreakdownTbodyDetails) { // Use the correct ID for the details page tbody
+                            dailyRestBreakdownTbodyDetails.innerHTML = '';
+                            record.dailyBreakdown.forEach(day => {
+                                const row = document.createElement('tr');
+                                // Determine status badge class
+                                let statusBadgeClass = 'badge-success';
+                                if (day.status === 'Violated') {
+                                    statusBadgeClass = 'badge-error';
+                                } else if (day.status.includes('Awaiting') || day.status === 'Pending') {
+                                    statusBadgeClass = 'badge-warning';
+                                }
+
+                                row.innerHTML = `
+                                    <td>
+                                        <div class="font-bold">${day.date}</div>
+                                        <div class="text-sm opacity-50">${day.dayOfWeek}</div>
+                                    </td>
+                                    <td>${day.periods.join('<br>')}</td>
+                                    <td>${day.totalHours}</td>
+                                    <td>${day.sevenDayTotal}</td>
+                                    <td><div class="badge ${statusBadgeClass}">${day.status}</div></td>
+                                    <td><span class="text-xs text-base-content-secondary">${day.comment || ''}</span></td>
+                                `;
+                                dailyRestBreakdownTbodyDetails.appendChild(row);
+                            });
+                        }
+                        setActivePage('record-details-page'); // Navigate to the record details page
+                    }
+                });
+            });
+
+            if (backToRecordsListBtn) {
+                backToRecordsListBtn.addEventListener('click', () => {
+                    setActivePage('my-records-page'); // Navigate back to my records page
+                });
+            }
+
+            const signMayRecordBtn = document.getElementById('sign-may-record-btn');
+            if (signMayRecordBtn) {
+                signMayRecordBtn.addEventListener('click', (e) => {
+                    const maySignatureStatus = document.getElementById('may-signature-status');
+                    if (maySignatureStatus) {
+                        maySignatureStatus.innerHTML = '<i class="fas fa-check text-success mr-1"></i>Signed';
+                    }
+                    // Update the recordData for May 2025 to reflect the signature
+                    if (recordData.may2025) {
+                        recordData.may2025.seafarerSignatureDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                        recordData.may2025.overallStatus = 'Signed & Completed';
+                    }
+                    if (e.target) { // Check if target exists before attempting to remove
+                        e.target.remove(); // Remove the sign button after clicking
+                    }
+                    console.log('May 2025 record acknowledged!');
+                });
+            }
+
+
+            const exportAllBtn = document.getElementById('export-all-btn');
+            if (exportAllBtn) {
+                exportAllBtn.addEventListener('click', () => {
+                    console.log('Exporting all records...');
+                    // Placeholder for export functionality (e.g., generate PDF/CSV)
+                    // In a real app, this would trigger a download or server-sided process
+                });
+            }
+
+
+            if (printPdfReportBtn) {
+                printPdfReportBtn.addEventListener('click', () => {
+                    if (currentRecordId && recordData[currentRecordId]) {
+                        printRecordDetails(recordData[currentRecordId]);
+                    } else {
+                        console.error("No record selected to print.");
+                    }
+                });
+            }
+
+            // Function to export record details as CSV
+            const exportCsvReport = (record) => {
+                // Define CSV header
+                let csv = "DATE,REST PERIODS,TOTAL HOURS,7-DAY TOTAL,STATUS,COMMENT\n"; // Added COMMENT header
+
+                // Add daily breakdown data
+                record.dailyBreakdown.forEach(day => {
+                    const periods = day.periods.map(p => `"${p.replace(/"/g, '""')}"`).join('; '); // Handle commas/quotes within periods
+                    const comment = day.comment ? `"${day.comment.replace(/"/g, '""')}"` : '';
+                    csv += `"${day.date} (${day.dayOfWeek})",${periods},${day.totalHours},${day.sevenDayTotal},${day.status},${comment}\n`;
+                });
+
+                // Create a Blob and download link
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                if (link.download !== undefined) { // Feature detection for download attribute
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `${record.title.replace(/\s/g, '_')}_Report.csv`);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url); // Clean up the URL object
+                    console.log('CSV report generated and downloaded.');
+                } else {
+                    // Fallback for browsers that don't support download attribute
+                    console.warn('Your browser does not support the download attribute, CSV will open in new tab.');
+                    window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
+                }
+            };
+
+            if (exportCsvReportBtn) {
+                exportCsvReportBtn.addEventListener('click', () => {
+                    if (currentRecordId && recordData[currentRecordId]) {
+                        exportCsvReport(recordData[currentRecordId]);
+                    } else {
+                        console.error("No record selected to export CSV.");
+                    }
+                });
+            }
+
+
+            // Function to print record details
+            const printRecordDetails = (record) => {
+                const printWindow = window.open('', '', 'height=600,width=800');
+                if (!printWindow) {
+                    console.error("Pop-up blocked. Please allow pop-ups for this site to print.");
+                    return;
+                }
+
+                let dailyBreakdownHtml = '';
+                record.dailyBreakdown.forEach(day => {
+                    let statusClass = 'text-green-600'; // Default for compliant
+                    if (day.status === 'Violated') {
+                        statusClass = 'text-red-600';
+                    }
+                    dailyBreakdownHtml += `
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 8px 0;">
+                                <div style="font-weight: bold;">${day.date}</div>
+                                <div style="font-size: 0.875rem; opacity: 0.7;">${day.dayOfWeek}</div>
+                            </td>
+                            <td style="padding: 8px 0;">${day.periods.join('<br>')}</td>
+                            <td style="padding: 8px 0;">${day.totalHours}</td>
+                            <td style="padding: 8px 0;">${day.sevenDayTotal}</td>
+                            <td style="padding: 8px 0;"><span style="font-weight: 600; ${statusClass}">${day.status}</span></td>
+                            <td style="padding: 8px 0; font-size: 0.875rem; color: #6b7280;">${day.comment || ''}</td> <!-- Added comment -->
+                        </tr>
+                    `;
+                });
+
+                const printContent = `
+                    <html>
+                    <head>
+                        <title>${record.title} Report</title>
+                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                        <style>
+                            body { font-family: 'Inter', sans-serif; margin: 20px; color: #333; }
+                            h1, h2, h3 { color: #1f2937; }
+                            .section { margin-bottom: 20px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; }
+                            .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; text-align: center; margin-bottom: 20px; }
+                            .grid-item { background-color: #f3f4f6; padding: 10px; border-radius: 8px; }
+                            .grid-value { font-size: 2.25rem; font-weight: bold; color: #1d4ed8; }
+                            .grid-label { font-size: 0.875rem; color: #6b7280; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                            th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0; }
+                            th { background-color: #f9fafb; font-weight: 600; color: #4b5563; }
+                            .status-badge { font-weight: 600; }
+                            .text-green-600 { color: #059669; }
+                            .text-red-600 { color: #dc2626; }
+                            .text-orange-600 { color: #ea580c; } /* For warning/pending */
+                            .text-base-content-secondary { color: #6b7280; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 20px;">Rest Tracker Record Report</h1>
+                        <div class="section">
+                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 10px;">${record.title}</h2>
+                            <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 15px;">Overall Status: <span class="status-badge ${record.overallStatus.includes('Awaiting') ? 'text-orange-600' : 'text-green-600'}">${record.overallStatus}</span></p>
+                            <div class="grid-container">
+                                <div class="grid-item">
+                                    <div class="grid-value" style="color:#1e40af">${record.daysRecorded}</div>
+                                    <div class="grid-label">Days Recorded</div>
+                                </div>
+                                <div class="grid-item">
+                                    <div class="grid-value" style="color:#065f46">${record.complianceRate}</div>
+                                    <div class="grid-label">Compliance Rate</div>
+                                </div>
+                                <div class="grid-item">
+                                    <div class="grid-value" style="color:#1e40af">${record.totalRest}</div>
+                                    <div class="grid-label">Total Rest Hours</div>
+                                </div>
+                                <div class="grid-item">
+                                    <div class="grid-value" style="color:#1e40af">${(record.daysRecorded * 24) - record.totalRest}</div>
+                                    <div class="grid-label">Total Work Hours</div>
+                                </div>
+                            </div>
+                            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 10px;">Signature Status</h3>
+                            <p style="font-size: 0.875rem; margin-bottom: 5px;">Master Signature: <span style="font-weight: bold; color: #059669;">&#10003; Signed (${record.masterSignatureDate})</span></p>
+                            <p style="font-size: 0.875rem;">Seafarer Signature: <span style="font-weight: bold; ${record.seafarerSignatureDate === 'Pending' ? 'color: #ea580c;' : 'color: #059669;'}">${record.seafarerSignatureDate === 'Pending' ? 'Pending' : '&#10003; Signed (' + record.seafarerSignatureDate + ')'}</span></p>
+                        </div>
+
+                        <div class="section">
+                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 10px;">Daily Rest Hours Breakdown</h2>
+                            <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 15px;">Detailed view of each day's rest periods and compliance status</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>DATE</th>
+                                        <th>REST PERIODS</th>
+                                        <th>TOTAL HOURS</th>
+                                        <th>7-DAY TOTAL</th>
+                                        <th>STATUS</th>
+                                        <th>COMMENT</th> <!-- Added comment header for printing -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${dailyBreakdownHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                printWindow.document.open();
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                printWindow.focus(); // Focus on the new window
+                printWindow.print();
+                // Close after print dialog is closed or cancelled
+                printWindow.onafterprint = () => {
+                    printWindow.close();
+                };
+            };
+
+
+            // Initial render for Record Hours page
+            renderCalendar(currentYear, currentMonth);
+            loadRestPeriodsForSelectedDate(); // Load initial periods for today
+            updateTimeline();
+            updateRecordHoursUIState(); // Set initial UI state
+
+            // Set initial state for quick nav icons (should be visible if sidebar is hidden initially)
+            if (window.innerWidth < 1024 && !isSidebarOpen) {
+                quickNavIcons.classList.remove('hidden');
+            }
+
+            // --- Profile Page Logic ---
+            const profileFields = [
+                profileNameInput, profilePositionInput, profileEmailInput, profileContactInput, profileThemeSelect, profileUserTypeSelect, profileScheduleTypeSelect
+            ];
+
+            const setProfileEditMode = (isEditing) => {
+                profileFields.forEach(field => {
+                    if (field) field.disabled = !isEditing;
+                });
+
+                // Custom schedule inputs are enabled only if editing and "Custom Schedule" is selected
+                const isCustomScheduleSelected = profileScheduleTypeSelect && profileScheduleTypeSelect.value === 'Custom Schedule';
+                if (customScheduleNameInput) customScheduleNameInput.disabled = !isEditing || !isCustomScheduleSelected;
+                if (addCustomPeriodBtn) addCustomPeriodBtn.disabled = !isEditing || !isCustomScheduleSelected;
+                if (saveCustomScheduleBtn) saveCustomScheduleBtn.disabled = !isEditing || !isCustomScheduleSelected;
+                if (customStartTimeInput) customStartTimeInput.disabled = !isEditing || !isCustomScheduleSelected;
+                if (customEndTimeInput) customEndTimeInput.disabled = !isEditing || !isCustomScheduleSelected;
+                if (customCommentInput) customCommentInput.disabled = !isEditing || !isCustomScheduleSelected;
+
+                if (isEditing) {
+                    if (profileEditSaveBtn) {
+                        profileEditSaveBtn.textContent = 'Save Changes';
+                        profileEditSaveBtn.classList.remove('btn-primary');
+                        profileEditSaveBtn.classList.add('btn-success');
+                    }
+                    if (profileCancelBtn) profileCancelBtn.classList.remove('hidden');
+                    if (customScheduleSection) customScheduleSection.classList.toggle('hidden', !isCustomScheduleSelected);
+                } else {
+                    if (profileEditSaveBtn) {
+                        profileEditSaveBtn.textContent = 'Edit Profile';
+                        profileEditSaveBtn.classList.remove('btn-success');
+                        profileEditSaveBtn.classList.add('btn-primary');
+                    }
+                    if (profileCancelBtn) profileCancelBtn.classList.add('hidden');
+                    if (customScheduleSection) customScheduleSection.classList.add('hidden'); // Hide custom section when not editing
+                }
+            };
+
+            // Function to populate schedule types dropdown based on user type
+            const populateScheduleTypes = () => {
+                if (!profileScheduleTypeSelect) return;
+                profileScheduleTypeSelect.innerHTML = '<option value="">Select Schedule</option>'; // Clear existing options
+
+                const selectedUserType = profileUserTypeSelect ? profileUserTypeSelect.value : '';
+                if (selectedUserType && schedules[selectedUserType]) {
+                    schedules[selectedUserType].forEach(schedule => {
+                        const option = document.createElement('option');
+                        option.value = schedule.name;
+                        option.textContent = schedule.name;
+                        profileScheduleTypeSelect.appendChild(option);
+                    });
+                }
+                // Add custom schedules
+                if (userProfileData.customSchedules && userProfileData.customSchedules.length > 0) {
+                    const customGroup = document.createElement('optgroup');
+                    customGroup.label = "My Custom Schedules";
+                    userProfileData.customSchedules.forEach(customSchedule => {
+                        const option = document.createElement('option');
+                        option.value = customSchedule.name;
+                        option.textContent = customSchedule.name;
+                        customGroup.appendChild(option);
+                    });
+                    profileScheduleTypeSelect.appendChild(customGroup);
+                }
+                profileScheduleTypeSelect.innerHTML += '<option value="Custom Schedule">Custom Schedule</option>'; // Always add Custom option
+
+                // Pre-select saved schedule if it exists
+                if (userProfileData.scheduleType) {
+                    profileScheduleTypeSelect.value = userProfileData.scheduleType;
+                } else {
+                    profileScheduleTypeSelect.value = ""; // Ensure default "Select Schedule" if none saved
                 }
                 
-                container.appendChild(songElement);
-            });
-        }
+                // Show/hide custom schedule section based on selection
+                if (profileScheduleTypeSelect.value === 'Custom Schedule' && !profileScheduleTypeSelect.disabled) { // Only show if enabled for editing
+                    customScheduleSection.classList.remove('hidden');
+                    // Populate custom schedule name and periods if editing an existing custom schedule
+                    const existingCustom = userProfileData.customSchedules.find(s => s.name === customScheduleNameInput.value);
+                    if (existingCustom) {
+                        customScheduleNameInput.value = existingCustom.name;
+                        currentCustomSchedulePeriods = [...existingCustom.ranges];
+                    } else {
+                        customScheduleNameInput.value = '';
+                        currentCustomSchedulePeriods = [];
+                    }
+                    renderCustomSchedulePeriods();
+                } else {
+                    customScheduleSection.classList.add('hidden');
+                }
+                setProfileEditMode(profileEditSaveBtn.textContent === 'Save Changes'); // Re-evaluate button disablement
+            };
 
-        function toggleSong(index) {
-            selectedSongs[index].selected = !selectedSongs[index].selected;
-            displayPreview(selectedSongs);
-        }
+            // Function to render custom schedule periods in the definition area
+            const renderCustomSchedulePeriods = () => {
+                if (!customSchedulePeriodsList) return;
+                customSchedulePeriodsList.innerHTML = '';
+                currentCustomSchedulePeriods.forEach((period, index) => {
+                    const periodDiv = document.createElement('div');
+                    periodDiv.classList.add('flex', 'justify-between', 'items-center', 'p-2', 'bg-base-100', 'rounded-lg', 'shadow-sm');
+                    periodDiv.innerHTML = `
+                        <div>
+                            <div class="font-medium text-base-content">${period.start} - ${period.end}</div>
+                            ${period.comment ? `<div class="text-xs text-base-content-secondary italic">Comment: ${period.comment}</div>` : ''}
+                        </div>
+                        <button class="btn btn-ghost btn-xs text-error delete-custom-period-btn" data-index="${index}">Delete</button>
+                    `;
+                    customSchedulePeriodsList.appendChild(periodDiv);
+                });
 
-        function playPreview(url) {
-            // Simple audio preview
-            const audio = new Audio(url);
-            audio.play();
-            setTimeout(() => audio.pause(), 10000); // Stop after 10 seconds
-        }
+                document.querySelectorAll('.delete-custom-period-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = parseInt(e.currentTarget.dataset.index);
+                        currentCustomSchedulePeriods.splice(index, 1);
+                        renderCustomSchedulePeriods();
+                    });
+                });
+            };
 
-        async function createPlaylist() {
-            const playlistTitle = document.getElementById('playlist-title').value;
-            const tracksToAdd = selectedSongs.filter(song => song.selected && song.spotifyTrack);
+            // Event listener for user type change
+            if (profileUserTypeSelect) {
+                profileUserTypeSelect.addEventListener('change', () => {
+                    populateScheduleTypes();
+                    // Disable schedule type if no user type selected
+                    if (profileScheduleTypeSelect) {
+                        profileScheduleTypeSelect.disabled = !profileUserTypeSelect.value;
+                    }
+                });
+            }
+
+            // Event listener for schedule type change
+            if (profileScheduleTypeSelect) {
+                profileScheduleTypeSelect.addEventListener('change', () => {
+                    const selectedValue = profileScheduleTypeSelect.value;
+                    if (selectedValue === 'Custom Schedule') {
+                        customScheduleSection.classList.remove('hidden');
+                        customScheduleNameInput.value = ''; // Clear custom name for new custom schedule
+                        currentCustomSchedulePeriods = []; // Clear periods for new custom schedule
+                        renderCustomSchedulePeriods();
+                    } else {
+                        customScheduleSection.classList.add('hidden');
+                    }
+                    // Re-evaluate enablement of custom schedule inputs
+                    setProfileEditMode(profileEditSaveBtn.textContent === 'Save Changes');
+                    updateProfileScheduleTimeline(); // Update timeline when schedule type changes
+                });
+            }
+
+            // Add period to custom schedule
+            if (addCustomPeriodBtn) {
+                addCustomPeriodBtn.addEventListener('click', () => {
+                    const start = customStartTimeInput.value;
+                    const end = customEndTimeInput.value;
+                    const comment = customCommentInput.value.trim();
+
+                    if (start && end) {
+                        currentCustomSchedulePeriods.push({ start, end, comment });
+                        renderCustomSchedulePeriods();
+                        customStartTimeInput.value = '';
+                        customEndTimeInput.value = '';
+                        customCommentInput.value = '';
+                        updateProfileScheduleTimeline(); // Update timeline when custom period added
+                    } else {
+                        showToast('Please enter start and end times for the custom period.', 2000);
+                    }
+                });
+            }
+
+            // Save custom schedule
+            if (saveCustomScheduleBtn) {
+                saveCustomScheduleBtn.addEventListener('click', () => {
+                    const customName = customScheduleNameInput.value.trim();
+                    if (!customName) {
+                        showToast('Please enter a name for your custom schedule.', 2000);
+                        return;
+                    }
+                    if (currentCustomSchedulePeriods.length === 0) {
+                        showToast('Please add at least one rest period to your custom schedule.', 2000);
+                        return;
+                    }
+
+                    const newCustomSchedule = {
+                        name: customName,
+                        ranges: [...currentCustomSchedulePeriods]
+                    };
+
+                    // Check if schedule name already exists (predefined or custom)
+                    const nameExists = Object.values(schedules).flat().some(s => s.name === customName) ||
+                                       userProfileData.customSchedules.some(s => s.name === customName);
+                    if (nameExists) {
+                        showToast('A schedule with this name already exists. Please choose a different name.', 3000);
+                        return;
+                    }
+
+
+                    userProfileData.customSchedules.push(newCustomSchedule);
+                    userProfileData.scheduleType = newCustomSchedule.name; // Select the newly created custom schedule
+                    populateScheduleTypes(); // Re-populate to include the new custom schedule
+                    showToast('Custom schedule saved and selected!', 3000);
+                    setProfileEditMode(false); // Exit edit mode after saving
+                    updateProfileScheduleTimeline(); // Update timeline after saving custom schedule
+                });
+            }
+
+            // Initial population of user types (assuming they are static from HTML)
+            // Initial population of schedule types based on default/saved user type
+            populateScheduleTypes();
+
+            // Initial profile state
+            setProfileEditMode(false);
+
+            if (profileEditSaveBtn) {
+                profileEditSaveBtn.addEventListener('click', () => {
+                    if (profileEditSaveBtn.textContent === 'Edit Profile') {
+                        setProfileEditMode(true);
+                    } else { // Save Changes
+                        // Update userProfileData with current input values
+                        userProfileData.name = profileNameInput ? profileNameInput.value : userProfileData.name;
+                        userProfileData.position = profilePositionInput ? profilePositionInput.value : userProfileData.position;
+                        userProfileData.email = profileEmailInput ? profileEmailInput.value : userProfileData.email;
+                        userProfileData.contact = profileContactInput ? profileContactInput.value : userProfileData.contact;
+                        userProfileData.theme = profileThemeSelect ? profileThemeSelect.value : userProfileData.theme;
+                        userProfileData.userType = profileUserTypeSelect ? profileUserTypeSelect.value : userProfileData.userType;
+                        userProfileData.scheduleType = profileScheduleTypeSelect ? profileScheduleTypeSelect.value : userProfileData.scheduleType;
+
+                        // In a real app, save data to backend/storage
+                        showToast('Profile changes saved!', 3000);
+                        console.log('Profile saved:', userProfileData);
+                        setProfileEditMode(false);
+                        // Re-populate schedules based on new user type if it changed
+                        populateScheduleTypes();
+                    }
+                });
+            }
+
+            if (profileCancelBtn) {
+                profileCancelBtn.addEventListener('click', () => {
+                    // Revert changes (simulated - in real app, reload original data)
+                    if (profileNameInput) profileNameInput.value = userProfileData.name;
+                    if (profilePositionInput) profilePositionInput.value = userProfileData.position;
+                    if (profileEmailInput) profileEmailInput.value = userProfileData.email;
+                    if (profileContactInput) profileContactInput.value = userProfileData.contact;
+                    if (profileThemeSelect) profileThemeSelect.value = userProfileData.theme;
+                    if (profileUserTypeSelect) profileUserTypeSelect.value = userProfileData.userType;
+                    populateScheduleTypes(); // Re-populate schedules correctly based on reverted user type
+                    if (profileScheduleTypeSelect) profileScheduleTypeSelect.value = userProfileData.scheduleType;
+                    // Hide custom schedule section if it was visible
+                    if (customScheduleSection) customScheduleSection.classList.add('hidden');
+
+                    showToast('Profile changes cancelled.', 2000);
+                    setProfileEditMode(false);
+                });
+            }
+
+            // Populate profile fields with initial userProfileData
+            if (profileNameInput) profileNameInput.value = userProfileData.name;
+            if (profilePositionInput) profilePositionInput.value = userProfileData.position;
+            if (profileEmailInput) profileEmailInput.value = userProfileData.email;
+            if (profileContactInput) profileContactInput.value = userProfileData.contact;
+            if (profileThemeSelect) profileThemeSelect.value = userProfileData.theme;
+            if (profileUserTypeSelect) profileUserTypeSelect.value = userProfileData.userType;
+            // Schedule type dropdown populated by populateScheduleTypes on load
             
-            if (tracksToAdd.length === 0) {
-                alert('Please select at least one song for your playlist');
-                return;
-            }
+            // --- Profile Tabs Logic ---
+            const tabContents = document.querySelectorAll('.tab-content-panel');
+            profileTabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const targetTabId = e.target.dataset.tabTarget;
+                    switchProfileTab(targetTabId);
+                });
+            });
 
-            try {
-                // Create playlist
-                const createResponse = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: playlistTitle,
-                        description: 'Created with AI-powered Playlist Maker',
-                        public: false
-                    })
+            const switchProfileTab = (targetTabId) => {
+                profileTabs.forEach(tab => tab.classList.remove('tab-active'));
+                tabContents.forEach(content => content.classList.add('hidden'));
+
+                const activeTab = document.querySelector(`.tabs .tab[data-tab-target="${targetTabId}"]`);
+                const targetContent = document.getElementById(targetTabId);
+
+                if (activeTab) activeTab.classList.add('tab-active');
+                if (targetContent) targetContent.classList.remove('hidden');
+
+                // If switching to schedule settings, update its timeline
+                if (targetTabId === 'schedule-settings-tab') {
+                    updateProfileScheduleTimeline();
+                }
+            };
+
+            // Function to update the 24-hour timeline in the Profile's Schedule Settings tab
+            const updateProfileScheduleTimeline = () => {
+                if (!profileScheduleTimeline) return;
+                profileScheduleTimeline.innerHTML = ''; // Clear existing segments
+
+                let periodsToDraw = [];
+                const selectedScheduleName = profileScheduleTypeSelect ? profileScheduleTypeSelect.value : '';
+
+                if (selectedScheduleName === 'Custom Schedule') {
+                    periodsToDraw = [...currentCustomSchedulePeriods];
+                } else if (selectedScheduleName) {
+                    const selectedUserType = profileUserTypeSelect ? profileUserTypeSelect.value : '';
+                    const predefinedSchedules = schedules[selectedUserType];
+                    const foundSchedule = predefinedSchedules ? predefinedSchedules.find(s => s.name === selectedScheduleName) : null;
+                    if (foundSchedule) {
+                        periodsToDraw = [...foundSchedule.ranges];
+                    }
+                }
+
+                // Sort periods to ensure correct rendering
+                periodsToDraw.sort((a, b) => {
+                    const [ha, ma] = a.start.split(':').map(Number);
+                    const [hb, mb] = b.start.split(':').map(Number);
+                    if (ha !== hb) return ha - hb;
+                    return ma - mb;
                 });
 
-                const playlist = await createResponse.json();
+                let currentTime = 0; // In hours from 00:00
 
-                // Add tracks to playlist
-                const trackUris = tracksToAdd.map(song => song.spotifyTrack.uri);
-                await fetch(`https://api.spotify.com/v1/playlists/${playlist.id}/tracks`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        uris: trackUris
-                    })
+                periodsToDraw.forEach(period => {
+                    const startHour = parseFloat(period.start.split(':')[0]) + parseFloat(period.start.split(':')[1]) / 60;
+                    const endHour = parseFloat(period.end.split(':')[0]) + parseFloat(period.end.split(':')[1]) / 60;
+                    let duration = endHour - startHour;
+                    if (duration < 0) duration += 24; // Handle overnight periods
+
+                    // Add work period if there's a gap
+                    if (startHour > currentTime) {
+                        const workDuration = startHour - currentTime;
+                        const workWidth = (workDuration / 24) * 100;
+                        const workLeft = (currentTime / 24) * 100;
+                        const workDiv = document.createElement('div');
+                        workDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg');
+                        workDiv.style.left = `${workLeft}%`;
+                        workDiv.style.width = `${workWidth}%`;
+                        profileScheduleTimeline.appendChild(workDiv);
+                    }
+
+                    // Add rest period
+                    const restWidth = (duration / 24) * 100;
+                    const restLeft = (startHour / 24) * 100;
+                    const restDiv = document.createElement('div');
+                    restDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-green-500', 'rounded-lg');
+                    restDiv.style.left = `${restLeft}%`;
+                    restDiv.style.width = `${restWidth}%`;
+                    profileScheduleTimeline.appendChild(restDiv);
+
+                    currentTime = endHour;
+                    if (currentTime >= 24) currentTime -= 24; // Reset for next day if passed midnight
                 });
 
-                document.getElementById('success-message').innerHTML = `
-                    "${playlistTitle}" has been created with ${tracksToAdd.length} songs!<br>
-                    <a href="${playlist.external_urls.spotify}" target="_blank" style="color: #1db954; text-decoration: none;">
-                        🎵 Open in Spotify
-                    </a>
-                `;
-                
-                showStep('success');
+                // Add remaining work period until end of day if any
+                if (currentTime < 24 && periodsToDraw.length > 0) {
+                    const lastPeriodEndHour = parseFloat(periodsToDraw[periodsToDraw.length - 1].end.split(':')[0]) + parseFloat(periodsToDraw[periodsToDraw.length - 1].end.split(':')[1]) / 60;
+                    if (lastPeriodEndHour < 24) { // Only if the last period doesn't extend past midnight
+                        const workDuration = 24 - lastPeriodEndHour;
+                        const workWidth = (workDuration / 24) * 100;
+                        const workLeft = (lastPeriodEndHour / 24) * 100;
+                        const workDiv = document.createElement('div');
+                        workDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg');
+                        workDiv.style.left = `${workLeft}%`;
+                        workDiv.style.width = `${workWidth}%`;
+                        profileScheduleTimeline.appendChild(workDiv);
+                    }
+                }
+                // Handle the case where there are no rest periods
+                if (periodsToDraw.length === 0 && profileScheduleTimeline) {
+                    const fullDayWorkDiv = document.createElement('div');
+                    fullDayWorkDiv.classList.add('absolute', 'top-0', 'h-full', 'bg-gray-400', 'opacity-70', 'rounded-lg');
+                    fullDayWorkDiv.style.left = '0%';
+                    fullDayWorkDiv.style.width = '100%';
+                    profileScheduleTimeline.appendChild(fullDayWorkDiv);
+                }
+            };
 
-            } catch (error) {
-                console.error('Error creating playlist:', error);
-                alert('Failed to create playlist. Please try again.');
-            }
-        }
+            // Call updateProfileScheduleTimeline initially for default schedule view
+            updateProfileScheduleTimeline();
 
-        function createNewPlaylist() {
-            // Reset all data
-            document.getElementById('playlist-title').value = '';
-            document.getElementById('songs-container').innerHTML = `
-                <div class="song-input">
-                    <input type="text" placeholder="e.g., 'Bohemian Rhapsody by Queen' or 'Ed Sheeran Shape of You'">
-                    <button class="btn btn-danger" onclick="removeSongInput(this)">×</button>
-                </div>
-            `;
-            parsedSongs = [];
-            selectedSongs = [];
-            showStep('input');
-        }
-
-        function goBack() {
-            showStep('input');
-        }
-
-        function showStep(step) {
-            // Hide all steps
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            // Show current step
-            document.getElementById(step + '-step').classList.add('active');
-            currentStep = step;
-        }
+        });
     </script>
 </body>
 </html>
